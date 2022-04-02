@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Expresion } from './Interprete/Expresion/Expresion.js';
+
 
 @Component({
   selector: 'app-root',
