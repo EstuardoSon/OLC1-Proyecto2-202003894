@@ -1,5 +1,6 @@
 %{
-    //imports
+    var tipo = 0;
+    var valor = null;
 %}
     
 
@@ -104,21 +105,51 @@ ini
 ;
 
 Instrucciones
-    : Declaraciones {$$ = $1}
-    |Instrucciones Declaraciones {$$ = $1 + $2}
+    : Declaraciones { $$ = $1 }
+    |Instrucciones Declaraciones { $$ = $1 +"\n"+$2 }
 ;
 
 Declaraciones
-    : INT Variables PTCOMA {$$ = $1+$2+$3}
-    | DOUBLE Variables PTCOMA {$$ = $1+$2+$3}
-    | BOOLEAN Variables PTCOMA {$$ = $1+$2+$3}
-    | CARACTER Variables PTCOMA {$$ = $1+$2+$3}
-    | STRING Variables PTCOMA {$$ = $1+$2+$3}
+    : INT Variables { $$ = $1 +" "+$2 }
+    | DOUBLE Variables { $$ = $1 +" "+$2 }
+    | BOOLEAN Variables { $$ = $1 +" "+$2 }
+    | CARACTER Variables { $$ = $1 +" "+$2 }
+    | STRING Variables { $$ = $1 +" "+$2 }
 ;
 
 Variables
-    : IDENTIFICADOR {$$ = $1}
-    | IDENTIFICADOR ASIGNACION  {$$ = $1}
-    | Variables COMA IDENTIFICADOR {$$ = $1+$2+" "+$3}
-     
+    : Variables2 ASIGNACION Valor PTCOMA { $$ = $1 +" = "+$3+";" }
+    | Variables2 PTCOMA { $$ = $1 +";" }
+;
+
+Variables2
+    : Variables2 COMA IDENTIFICADOR { $$ = $1 +", "+ $3 }
+    | IDENTIFICADOR { $$ = $1 }
+;
+
+Valor
+    : RESTA Valor %prec UMINUS { $$ = 0 - Number($2)}
+    | Valor POTENCIA Valor { $$ = Math.pow(Number($1), Number($3)) }
+    | Valor MULTIPLICACION Valor { $$ = Number($1) * Number($3) }
+    | Valor DIVISION Valor { $$ = Number($1) / Number($3) }
+    | Valor SUMA Valor { $$ = Number($1) + Number($3) }
+    | Valor RESTA Valor {}
+    | Valor IGUAL Valor {}
+    | Valor DIFERENTE Valor {}
+    | Valor MENOR Valor {}
+    | Valor MENORIGUAL Valor {}
+    | Valor MAYOR Valor {}
+    | Valor MAYORIGUAL Valor {}
+    | Valor NEGACION Valor {}
+    | Valor AND Valor {}
+    | Valor TERNARIO Valor {}
+    | Valor DOSPT Valor {}
+    | PARABRE Valor PARCIERRE {}
+    | ENTERO {$$ = Number($1)}
+    | DECIMAL { $$ = Number($1) }
+    | CADENA {  }
+    | CARACTER {}
+    | TRUE { $$ = 1 }
+    | FALSE { $$ = 0 }
+    | IDENTIFICADOR {}
 ;

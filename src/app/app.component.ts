@@ -1,5 +1,4 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Expresion } from './Interprete/Expresion/Expresion.js';
 
 
 @Component({

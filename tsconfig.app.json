@@ -11,7 +11,5 @@
   ],
   "include": [
     "src/**/*.d.ts",
-    "src/app/Interprete/Expresion/**/*.ts",
-    "src/app/Interprete/Error/**/*.ts"
   ]
 }

@@ -1,21 +1,21 @@
 <div class="d-grid gap-4" style="grid-template-columns: 1fr 1fr 1fr 1fr; margin-top: 20px; margin-bottom: 20px;">
-  <button class="btn btn-primary">Abrir Archivo</button>
+  <input type="file" #file (change)="cargarArchivo()" class="btn btn-primary" accept=".cst">
   <button class="btn btn-secondary">Crear Archivo</button>
   <button class="btn btn-secondary">Guardar Archivo</button>
-  <button class="btn btn-danger">Ejecutar</button>
+  <button class="btn btn-danger" (click)="ejecutar()">Ejecutar</button>
 </div>
 
 <div class="d-grid gap-3" style="grid-template-columns: 1fr 1fr; margin-top: 20px; margin-bottom: 20px;">
     <div class="bg-light border rounded-3">
-      <div class="form-group" style="background-color: rgb(41, 6, 9); color: white;">
-          <label for="my-textarea" style="font-size: 20px;">Editor</label>
-          <textarea id="my-textarea" class="form-control" name="" rows="10"></textarea>
+      <div class="form-group" style="background-color: rgb(41, 6, 9); color: white;" #entrada>
+          <label for="entrada" style="font-size: 20px;">Editor</label>
+          <textarea #codigo id="entrada" class="form-control" name="" rows="10"></textarea>
       </div>
     </div>
     <div class="bg-light border rounded-3">
       <div class="form-group" style="background-color: rgb(41, 6, 9);">
-          <label for="my-textarea" style="font-size: 20px; color: white;">Consola</label>
-          <textarea id="my-textarea" class="form-control" name="" rows="10"></textarea>
+          <label for="salida" style="font-size: 20px; color: white;">Consola</label>
+          <textarea id="salida" class="form-control" name="" rows="10">{{salida}}</textarea>
       </div>
     </div>
 </div>

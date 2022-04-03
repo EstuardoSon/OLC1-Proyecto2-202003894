@@ -20,14 +20,9 @@ app.listen(app.get('port'), ()=>{
 
 app.use("/", ClienteRouter);
 
+
 /*
 app.get("/",(req,res)=>{
     res.send({ "respuesta":"Estuardo"})
 })
 */
-/*
-const parser = require('../Grammar/grammar');
-const entrada = ' \n boolean anggelo, estuardo; //perro  \n DOUBLE anggelo, estuardo;'
-
-const result = parser.parse(entrada)
-console.log(result)*/
