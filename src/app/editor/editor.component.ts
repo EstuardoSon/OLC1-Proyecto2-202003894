@@ -8,6 +8,7 @@ import { BackendService } from '../services/backend.service';
 })
 export class EditorComponent implements OnInit{
   public salida:string;
+  public contenido:string;
 
   constructor(private backend:BackendService) { 
     this.salida ="";
@@ -17,25 +18,34 @@ export class EditorComponent implements OnInit{
   }
 
   @ViewChild('file') archivo: ElementRef;
+  @ViewChild('codigo') codigo: ElementRef;
+
   cargarArchivo(){
     let archivo = this.archivo.nativeElement.files[0]
     let fileReader = new FileReader();
-    fileReader.readAsText(archivo); 
-    fileReader.onload = async (e: any) => {
-      console.log(fileReader.result);          
+    this.codigo.nativeElement.value = "";
+    try {
+      fileReader.readAsText(archivo); 
+      fileReader.onload = async (e: any) => {
+        console.log(fileReader.result)
+        this.codigo.nativeElement.value += fileReader.result;   
+      }
+    } catch (e) {
+      alert("Error en la Lectura del Archivo")
     }
+      
   }
 
   ejecutar(){
     this.enviarCodigo();
   }
 
-  @ViewChild('codigo') codigo: ElementRef;
-
   verAnalisis(){
     this.backend.obtenerAnalisis().subscribe(
       res => {
-        this.salida = JSON.parse(JSON.stringify(res)).Codigo
+        let infoSalida = JSON.parse(JSON.stringify(res))
+        this.salida = infoSalida.Codigo
+        this.salida += "\n"+infoSalida.Error
       },
       err => {
         console.log("Error en la Peticion");

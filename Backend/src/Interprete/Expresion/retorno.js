@@ -1,17 +1,15 @@
-export enum Type {
-    INT = 0,
-    DOUBLE = 1,
-    BOOLEAN = 2,
-    CHAR = 3,
-    STRING = 4
-}
-
-export type Retorno = {
-    value: any,
-    type: Type
-}
-
-export const tipoSUMA = [
+"use strict";
+exports.__esModule = true;
+exports.tipoRELACIONAL = exports.tipoMODULO = exports.tipoPOTENCIA = exports.tipoDIV = exports.tipoMULTI = exports.tipoRESTA = exports.tipoSUMA = exports.Type = void 0;
+var Type;
+(function (Type) {
+    Type[Type["INT"] = 0] = "INT";
+    Type[Type["DOUBLE"] = 1] = "DOUBLE";
+    Type[Type["BOOLEAN"] = 2] = "BOOLEAN";
+    Type[Type["CHAR"] = 3] = "CHAR";
+    Type[Type["STRING"] = 4] = "STRING";
+})(Type = exports.Type || (exports.Type = {}));
+exports.tipoSUMA = [
     [
         Type.INT, Type.DOUBLE, Type.INT, Type.INT, Type.STRING
     ],
@@ -27,9 +25,8 @@ export const tipoSUMA = [
     [
         Type.STRING, Type.STRING, Type.STRING, Type.STRING, Type.STRING
     ]
-]
-
-export const tipoRESTA = [
+];
+exports.tipoRESTA = [
     [
         Type.INT, Type.DOUBLE, Type.INT, Type.INT, null
     ],
@@ -45,9 +42,8 @@ export const tipoRESTA = [
     [
         null, null, null, null, null
     ]
-]
-
-export const tipoMULTI = [
+];
+exports.tipoMULTI = [
     [
         Type.INT, Type.DOUBLE, null, Type.INT, null
     ],
@@ -63,9 +59,8 @@ export const tipoMULTI = [
     [
         null, null, null, null, null
     ]
-]
-
-export const tipoDIV = [
+];
+exports.tipoDIV = [
     [
         Type.DOUBLE, Type.DOUBLE, null, Type.DOUBLE, null
     ],
@@ -81,9 +76,8 @@ export const tipoDIV = [
     [
         null, null, null, null, null
     ]
-]
-
-export const tipoPOTENCIA = [
+];
+exports.tipoPOTENCIA = [
     [
         Type.INT, Type.DOUBLE, null, null, null
     ],
@@ -99,9 +93,8 @@ export const tipoPOTENCIA = [
     [
         null, null, null, null, null
     ]
-]
-
-export const tipoMODULO = [
+];
+exports.tipoMODULO = [
     [
         Type.DOUBLE, Type.DOUBLE, null, null, null
     ],
@@ -117,9 +110,8 @@ export const tipoMODULO = [
     [
         null, null, null, null, null
     ]
-]
-
-export const tipoRELACIONAL = [
+];
+exports.tipoRELACIONAL = [
     [
         Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, null
     ],
@@ -135,4 +127,4 @@ export const tipoRELACIONAL = [
     [
         null, null, null, null, Type.BOOLEAN
     ]
-]
+];

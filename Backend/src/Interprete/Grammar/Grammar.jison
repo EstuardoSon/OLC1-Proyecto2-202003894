@@ -1,4 +1,11 @@
 %{
+    const {Aritmetica, Operador} = require('../Expresion/aritmetica')
+    const {Relacional} = require('../Expresion/Relacional')
+    const {Literal} = require('../Expresion/Literal')
+    const {ErrorE} = require('../Error/Error')
+    const {Declaracion} = require('../Instruccion/Declaracion')
+    Errores = []
+    exports.Errores = Errores
     var tipo = 0;
     var valor = null;
 %}
@@ -46,13 +53,12 @@
 
 (_)*[a-zA-ZnÑ]+[_a-zA-Z0-9ñÑ]*\b return 'IDENTIFICADOR';
 \"(\\n|\\\"|\\\'|\\t|\\\\|[^\"\\\n])*\" { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }; 
-[0-9]+(\.[0-9]+)?\b return 'DECIMAL';
-[0-9]+\bj return 'ENTERO';
-\'(\\n|\\\"|\\\'|\\t|\\\\|[^\'\\\n])\' return 'CARACTER';
+[0-9]+(\.[0-9]+)\b return 'DECIMAL';
+[0-9]+\b return 'ENTERO';
+\'(\\n|\\\"|\\\'|\\t|\\\\|[^\'\\\n])\' { yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; };
 
 
 //SIMBOLOS
-"=" return 'ASIGNACION';
 "++" return 'INCREMENTO';
 "--" return 'DECREMENTO';
 "+" return 'SUMA';
@@ -62,8 +68,9 @@
 "*" return 'MULTIPLICACION';
 "%" return 'MODULO';
 "==" return 'IGUAL';
-"!" return 'NEGACION';
+"=" return 'ASIGNACION';
 "!=" return 'DIFERENTE';
+"!" return 'NEGACION';
 "<=" return 'MENORIGUAL';
 "<" return 'MENOR'
 ">=" return 'MAYORIGUAL';
@@ -82,7 +89,7 @@
 "?" return 'TERNARIO';
 
 <<EOF>> return 'EOF';
-. {console.log(yylloc.first_line, yylloc.first_column,'Lexico',yytext)}
+. { Errores.push(new ErrorE(yylloc.first_line, yylloc.first_column,'Lexico',yytext)) }
 /lex
 
 %left 'OR'
@@ -100,56 +107,64 @@
 
 ini
     :Instrucciones EOF{
+        console.log($1)
         return $1;
     }
 ;
 
 Instrucciones
-    : Declaraciones { $$ = $1 }
-    |Instrucciones Declaraciones { $$ = $1 +"\n"+$2 }
+    : Declaraciones { if($1 != null){ $$=[$1] } else{ $$= [] } }
+    |Instrucciones TipoInstruccion { if($2 != null){ $1.push($2); $$ = [$1] } $$ = $1  }
+    | error PTCOMA { Errores.push(new ErrorE(@1.first_line, @1.first_column,'Sintactico', "Error Sintactico")); $$ = [] }
+;
+
+TipoInstruccion
+    : Declaraciones {if($1 == null){ Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Semantico', "La variable y su valor no son del mismo tipo")) }}
 ;
 
 Declaraciones
-    : INT Variables { $$ = $1 +" "+$2 }
-    | DOUBLE Variables { $$ = $1 +" "+$2 }
-    | BOOLEAN Variables { $$ = $1 +" "+$2 }
-    | CARACTER Variables { $$ = $1 +" "+$2 }
-    | STRING Variables { $$ = $1 +" "+$2 }
+    : INT Variables { if($2[0].realizarComprobacion(0)){ $$ = $2 } else { $$=null } }
+    | DOUBLE Variables { if($2[0].realizarComprobacion(1)){ $$ = $2 } else { $$=null } }
+    | BOOLEAN Variables { if($2[0].realizarComprobacion(2)){ $$ = $2 } else { $$=null } }
+    | CHAR Variables { if($2[0].realizarComprobacion(3)){ $$ = $2 } else { $$=null } }
+    | STRING Variables { if($2[0].realizarComprobacion(4)){ $$ = $2 } else { $$=null } }
+    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=null }
 ;
 
 Variables
-    : Variables2 ASIGNACION Valor PTCOMA { $$ = $1 +" = "+$3+";" }
-    | Variables2 PTCOMA { $$ = $1 +";" }
+    : Variables2 ASIGNACION Valor PTCOMA { for( i in $1 ){ $1[i].setValor($3) } $$ = $1 }
+    | Variables2 PTCOMA { $$ = $1 }
 ;
 
 Variables2
-    : Variables2 COMA IDENTIFICADOR { $$ = $1 +", "+ $3 }
-    | IDENTIFICADOR { $$ = $1 }
+    : Variables2 COMA IDENTIFICADOR { $1.push(new Declaracion(@1.first_line, @1.first_column, $3, null)); $$ = $1  }
+    | IDENTIFICADOR { $$ =[ new Declaracion(@1.first_line, @1.first_column, $1, null) ] }
 ;
 
 Valor
-    : RESTA Valor %prec UMINUS { $$ = 0 - Number($2)}
-    | Valor POTENCIA Valor { $$ = Math.pow(Number($1), Number($3)) }
-    | Valor MULTIPLICACION Valor { $$ = Number($1) * Number($3) }
-    | Valor DIVISION Valor { $$ = Number($1) / Number($3) }
-    | Valor SUMA Valor { $$ = Number($1) + Number($3) }
-    | Valor RESTA Valor {}
-    | Valor IGUAL Valor {}
-    | Valor DIFERENTE Valor {}
-    | Valor MENOR Valor {}
-    | Valor MENORIGUAL Valor {}
-    | Valor MAYOR Valor {}
-    | Valor MAYORIGUAL Valor {}
-    | Valor NEGACION Valor {}
-    | Valor AND Valor {}
-    | Valor TERNARIO Valor {}
-    | Valor DOSPT Valor {}
-    | PARABRE Valor PARCIERRE {}
-    | ENTERO {$$ = Number($1)}
-    | DECIMAL { $$ = Number($1) }
-    | CADENA {  }
-    | CARACTER {}
-    | TRUE { $$ = 1 }
-    | FALSE { $$ = 0 }
+    : RESTA Valor %prec UMINUS { $$ = new Aritmetica($2,new Literal("-1", 0, @1.first_line, @1.first_column),TipoAritmetica.MULTIPLICACION, @1.first_line, @1.first_column)}
+    | Valor POTENCIA Valor { $$ = new Aritmetica($1,$3,4, @1.first_line, @1.first_column) }
+    | Valor MULTIPLICACION Valor { $$ = new Aritmetica($1,$3,2, @1.first_line, @1.first_column) }
+    | Valor DIVISION Valor { $$ = new Aritmetica($1,$3,3, @1.first_line, @1.first_column) }
+    | Valor SUMA Valor { $$ = new Aritmetica($1,$3,0, @1.first_line, @1.first_column) }
+    | Valor RESTA Valor { $$ = new Aritmetica($1,$3,1, @1.first_line, @1.first_column) }
+    | Valor MODULO Valor { $$ = new Aritmetica($1,$3,5, @1.first_line, @1.first_column) }
+    | Valor IGUAL Valor { $$ = new Relacional($1,$3,0, @1.first_line, @1.first_column) }
+    | Valor DIFERENTE Valor { $$ = new Relacional($1,$3,1, @1.first_line, @1.first_column) }
+    | Valor MENOR Valor { $$ = new Relacional($1,$3,4, @1.first_line, @1.first_column) }
+    | Valor MENORIGUAL Valor {$$ = new Relacional($1,$3,5, @1.first_line, @1.first_column)}
+    | Valor MAYOR Valor { $$ = new Relacional($1,$3,2, @1.first_line, @1.first_column) }
+    | Valor MAYORIGUAL Valor { $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
+    | Valor NEGACION Valor { $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
+    | Valor AND Valor { $$ = new Relacional($1,$3,7, @1.first_line, @1.first_column) }
+    | Valor TERNARIO Valor DOSPT Valor {}
+    | NEGACION Valor { $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
+    | PARABRE Valor PARCIERRE { $$ = $2 }
+    | ENTERO {$$ = new Literal($1,0, @1.first_line, @1.first_column) }
+    | DECIMAL { $$ = new Literal($1,1, @1.first_line, @1.first_column) }
+    | CADENA { $$ = new Literal($1, 4, @1.first_line, @1.first_column) }
+    | CARACTER { $$ = new Literal($1, 3, @1.first_line, @1.first_column) }
+    | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
+    | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
     | IDENTIFICADOR {}
 ;
