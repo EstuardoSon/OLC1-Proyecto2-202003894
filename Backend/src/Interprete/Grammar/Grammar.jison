@@ -4,10 +4,12 @@
     const {Literal} = require('../Expresion/Literal')
     const {ErrorE} = require('../Error/Error')
     const {Declaracion} = require('../Instruccion/Declaracion')
+    const {Llamado} = require('../Expresion/Llamado')
+    const {Print, Println} = require('../Instruccion/Print')
     Errores = []
     exports.Errores = Errores
-    var tipo = 0;
-    var valor = null;
+    Impresion = ""
+    exports.Impresion = Impresion
 %}
     
 
@@ -52,10 +54,10 @@
 //EXPRESIONES
 
 (_)*[a-zA-ZnÑ]+[_a-zA-Z0-9ñÑ]*\b return 'IDENTIFICADOR';
-\"(\\n|\\\"|\\\'|\\t|\\\\|[^\"\\\n])*\" { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }; 
+\"(\\n|\\\"|\\\'|\\t|\\\\|\\r|[^\"\\\n])*\" { yytext = yytext.substr(1,yyleng-2); return 'CADENA'; }; 
 [0-9]+(\.[0-9]+)\b return 'DECIMAL';
 [0-9]+\b return 'ENTERO';
-\'(\\n|\\\"|\\\'|\\t|\\\\|[^\'\\\n])\' { yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; };
+\'(\\n|\\\"|\\\'|\\t|\\\\|\\r|[^\'\\\n])\' { yytext = yytext.substr(1,yyleng-2); return 'CARACTER'; };
 
 
 //SIMBOLOS
@@ -85,7 +87,7 @@
 ":" return 'DOSPT';
 "," return 'COMA';
 "&&" return 'AND';
-"\|\|" return 'OR';
+"||" return 'OR';
 "?" return 'TERNARIO';
 
 <<EOF>> return 'EOF';
@@ -98,51 +100,51 @@
 %left 'IGUAL' 'DIFERENTE' 'MENOR' 'MENORIGUAL' 'MAYOR' 'MAYORIGUAL'
 %left 'SUMA' 'RESTA'
 %left 'DIVISION' 'MULTIPLICACION'
-%left 'POTENCIA'
+%nonassoc 'POTENCIA'
+%nonassoc 'DECREMENTO' 'INCREMENTO'
 %right UMINUS
-
 %start ini
 
 %%
 
 ini
     :Instrucciones EOF{
-        console.log($1)
         return $1;
     }
 ;
 
 Instrucciones
-    : Declaraciones { if($1 != null){ $$=[$1] } else{ $$= [] } }
-    |Instrucciones TipoInstruccion { if($2 != null){ $1.push($2); $$ = [$1] } $$ = $1  }
-    | error PTCOMA { Errores.push(new ErrorE(@1.first_line, @1.first_column,'Sintactico', "Error Sintactico")); $$ = [] }
+    : TipoInstruccion { $$=$1 }
+    | Instrucciones TipoInstruccion { for(let instruccion of $2){ $1.push(instruccion) } $$=$1  }
 ;
 
 TipoInstruccion
-    : Declaraciones {if($1 == null){ Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Semantico', "La variable y su valor no son del mismo tipo")) }}
+    : Declaraciones 
+    | Print
+    | Println
+    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
 ;
 
 Declaraciones
-    : INT Variables { if($2[0].realizarComprobacion(0)){ $$ = $2 } else { $$=null } }
-    | DOUBLE Variables { if($2[0].realizarComprobacion(1)){ $$ = $2 } else { $$=null } }
-    | BOOLEAN Variables { if($2[0].realizarComprobacion(2)){ $$ = $2 } else { $$=null } }
-    | CHAR Variables { if($2[0].realizarComprobacion(3)){ $$ = $2 } else { $$=null } }
-    | STRING Variables { if($2[0].realizarComprobacion(4)){ $$ = $2 } else { $$=null } }
-    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=null }
+    : INT Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],0)) } $$=arreglo }
+    | DOUBLE Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],1)) } $$=arreglo }
+    | BOOLEAN Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],2)) } $$=arreglo }
+    | CHAR Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],3)) } $$=arreglo }
+    | STRING Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],4)) } $$=arreglo }
 ;
 
 Variables
-    : Variables2 ASIGNACION Valor PTCOMA { for( i in $1 ){ $1[i].setValor($3) } $$ = $1 }
+    : Variables2 ASIGNACION Valor PTCOMA { for( i in $1 ){ $1[i][3] = $3 } $$ = $1 }
     | Variables2 PTCOMA { $$ = $1 }
 ;
 
 Variables2
-    : Variables2 COMA IDENTIFICADOR { $1.push(new Declaracion(@1.first_line, @1.first_column, $3, null)); $$ = $1  }
-    | IDENTIFICADOR { $$ =[ new Declaracion(@1.first_line, @1.first_column, $1, null) ] }
+    : Variables2 COMA IDENTIFICADOR { $1.push([@1.first_line, @1.first_column, $3, null]); $$ = $1  }
+    | IDENTIFICADOR { $$ =[ [@1.first_line, @1.first_column, $1, null] ] }
 ;
 
 Valor
-    : RESTA Valor %prec UMINUS { $$ = new Aritmetica($2,new Literal("-1", 0, @1.first_line, @1.first_column),TipoAritmetica.MULTIPLICACION, @1.first_line, @1.first_column)}
+    : RESTA Valor %prec UMINUS { $$ = new Aritmetica($2,new Literal(-1, 0, @1.first_line, @1.first_column),2, @1.first_line, @1.first_column)}
     | Valor POTENCIA Valor { $$ = new Aritmetica($1,$3,4, @1.first_line, @1.first_column) }
     | Valor MULTIPLICACION Valor { $$ = new Aritmetica($1,$3,2, @1.first_line, @1.first_column) }
     | Valor DIVISION Valor { $$ = new Aritmetica($1,$3,3, @1.first_line, @1.first_column) }
@@ -155,10 +157,12 @@ Valor
     | Valor MENORIGUAL Valor {$$ = new Relacional($1,$3,5, @1.first_line, @1.first_column)}
     | Valor MAYOR Valor { $$ = new Relacional($1,$3,2, @1.first_line, @1.first_column) }
     | Valor MAYORIGUAL Valor { $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
-    | Valor NEGACION Valor { $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
-    | Valor AND Valor { $$ = new Relacional($1,$3,7, @1.first_line, @1.first_column) }
-    | Valor TERNARIO Valor DOSPT Valor {}
-    | NEGACION Valor { $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
+    | Valor OR Valor { $$ = new Relacional($1,$3,7, @1.first_line, @1.first_column) }
+    | Valor AND Valor { $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
+    | Valor INCREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column) }
+    | Valor DECREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column) }
+    | Valor TERNARIO Valor DOSPT Valor {  } 
+    | NEGACION Valor {  }
     | PARABRE Valor PARCIERRE { $$ = $2 }
     | ENTERO {$$ = new Literal($1,0, @1.first_line, @1.first_column) }
     | DECIMAL { $$ = new Literal($1,1, @1.first_line, @1.first_column) }
@@ -166,5 +170,13 @@ Valor
     | CARACTER { $$ = new Literal($1, 3, @1.first_line, @1.first_column) }
     | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
     | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
-    | IDENTIFICADOR {}
+    | IDENTIFICADOR { $$ = new Llamado($1, @1.first_line, @1.first_column) }
+;
+
+Print
+    : PRINT PARABRE Valor PARCIERRE PTCOMA { $$ = [new Print(@1.first_line, @1.first_column,$3)] }
+;
+
+Println
+    : PRINTLN PARABRE Valor PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column,$3)] }
 ;

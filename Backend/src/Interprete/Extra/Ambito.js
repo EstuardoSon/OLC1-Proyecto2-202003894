@@ -8,29 +8,29 @@ var Ambito = /** @class */ (function () {
         this.anterior = anterior;
         this.variables = new Map();
     }
-    Ambito.prototype.setVal = function (id, value, type, line, column) {
-        var env = this;
-        while (env != null) {
-            if (env.variables.has(id)) {
-                var val = env.variables.get(id);
-                if (val.type == type) {
-                    env.variables.set(id, new Simbolo_1.Simbolo(value, id, type));
+    Ambito.prototype.setVal = function (id, valor, tipo, linea, columna) {
+        var entorno = this;
+        while (entorno != null) {
+            if (entorno.variables.has(id)) {
+                var val = entorno.variables.get(id);
+                if (val.tipo == tipo) {
+                    entorno.variables.set(id, new Simbolo_1.Simbolo(valor, id, tipo));
                 }
                 else {
-                    throw new Error_1.ErrorE(line, column, 'Semantico', 'No se puede asignar: ' + type + ' a ' + val.type);
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + tipo + ' a ' + val.tipo);
                 }
             }
-            env = env.anterior;
+            entorno = entorno.anterior;
         }
-        this.variables.set(id, new Simbolo_1.Simbolo(value, id, type));
+        this.variables.set(id, new Simbolo_1.Simbolo(valor, id, tipo));
     };
     Ambito.prototype.getVal = function (id) {
-        var env = this;
-        while (env != null) {
-            if (env.variables.has(id)) {
-                return env.variables.get(id);
+        var entorno = this;
+        while (entorno != null) {
+            if (entorno.variables.has(id)) {
+                return entorno.variables.get(id);
             }
-            env = env.anterior;
+            entorno = entorno.anterior;
         }
         return null;
     };

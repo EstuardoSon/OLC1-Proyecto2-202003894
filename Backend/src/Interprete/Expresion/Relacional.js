@@ -26,9 +26,9 @@ var Relacional = /** @class */ (function (_super) {
         _this.tipo = tipo;
         return _this;
     }
-    Relacional.prototype.ejecutar = function () {
-        var valorIzquierda = this.izq.ejecutar();
-        var valorDerecha = this.der.ejecutar();
+    Relacional.prototype.ejecutar = function (ambito) {
+        var valorIzquierda = this.izq.ejecutar(ambito);
+        var valorDerecha = this.der.ejecutar(ambito);
         var dominante = this.tipoDominante(6, valorIzquierda.type, valorDerecha.type);
         if (dominante != null) {
             var valorIz = void 0, valorDer = void 0;
@@ -67,35 +67,35 @@ var Relacional = /** @class */ (function (_super) {
                 valorDer = Number(valorDerecha.value);
             }
             if (this.tipo == 0) {
-                var result = valorIz == valorDer;
+                var result = Boolean(valorIz == valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 1) {
-                var result = valorIz != valorDer;
+                var result = Boolean(valorIz != valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 2) {
-                var result = valorIz > valorDer;
+                var result = Boolean(valorIz > valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 3) {
-                var result = valorIz >= valorDer;
+                var result = Boolean(valorIz >= valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 4) {
-                var result = valorIz < valorDer;
+                var result = Boolean(valorIz < valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 5) {
-                var result = valorIz <= valorDer;
+                var result = Boolean(valorIz <= valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 6) {
-                var result = valorIz && valorDer;
+                var result = Boolean(valorIz && valorDer);
                 return { value: result, type: dominante };
             }
             else if (this.tipo == 7) {
-                var result = valorIz || valorDer;
+                var result = Boolean(valorIz || valorDer);
                 return { value: result, type: dominante };
             }
         }

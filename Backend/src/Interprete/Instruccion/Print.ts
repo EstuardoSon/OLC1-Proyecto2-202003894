@@ -1,16 +1,26 @@
 import { Expresion } from "../Expresion/Expresion";
-import { Type } from "../Expresion/Retorno";
 import { Ambito } from "../Extra/Ambito";
-import {Instruccion} from "../Instruccion/Instruccion";
+import { Instruccion } from "../Instruccion/Instruccion";
+var Impresion = require("../Grammar/grammar"); 
 
 export class Print extends Instruccion {
-    constructor(linea: number, columna: number, public valores:Expresion[]){
+    constructor(linea: number, columna: number, public valor:Expresion){
         super(linea, columna);
     }
 
     public ejecutar(ambito: Ambito) {
-        for(let valor of this.valores){
-            let dato = valor.ejecutar()
-        }
+            let dato = this.valor.ejecutar(ambito)
+            Impresion.Impresion += dato.value.toString()
+    }
+}
+
+export class Println extends Instruccion {
+    constructor(linea: number, columna: number, public valor:Expresion){
+        super(linea, columna);
+    }
+
+    public ejecutar(ambito: Ambito) {
+            let dato = this.valor.ejecutar(ambito)
+            Impresion.Impresion += dato.value.toString()+"\n"
     }
 }

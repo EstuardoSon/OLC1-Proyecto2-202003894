@@ -1,6 +1,6 @@
 "use strict";
 exports.__esModule = true;
-exports.tipoRELACIONAL = exports.tipoMODULO = exports.tipoPOTENCIA = exports.tipoDIV = exports.tipoMULTI = exports.tipoRESTA = exports.tipoSUMA = exports.Type = void 0;
+exports.tipoINCDEC = exports.tipoRELACIONAL = exports.tipoMODULO = exports.tipoPOTENCIA = exports.tipoDIV = exports.tipoMULTI = exports.tipoRESTA = exports.tipoSUMA = exports.Type = void 0;
 var Type;
 (function (Type) {
     Type[Type["INT"] = 0] = "INT";
@@ -113,18 +113,35 @@ exports.tipoMODULO = [
 ];
 exports.tipoRELACIONAL = [
     [
-        Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, null
+        Type.BOOLEAN, Type.BOOLEAN, null, Type.BOOLEAN, null
     ],
     [
-        Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, null
+        Type.BOOLEAN, Type.BOOLEAN, null, Type.BOOLEAN, null
     ],
     [
-        Type.BOOLEAN, Type.BOOLEAN, Type.BOOLEAN, null, null
+        null, null, Type.BOOLEAN, null, null
     ],
     [
         Type.BOOLEAN, Type.BOOLEAN, null, Type.BOOLEAN, null
     ],
     [
         null, null, null, null, Type.BOOLEAN
+    ]
+];
+exports.tipoINCDEC = [
+    [
+        Type.INT, Type.DOUBLE, null, null, null
+    ],
+    [
+        Type.DOUBLE, Type.DOUBLE, null, null, null
+    ],
+    [
+        null, null, null, null, null
+    ],
+    [
+        null, null, null, null, null
+    ],
+    [
+        null, null, null, null, null
     ]
 ];

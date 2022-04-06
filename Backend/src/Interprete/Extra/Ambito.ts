@@ -9,30 +9,30 @@ export class Ambito{
         this.variables = new Map()
     }
 
-    public setVal(id:string, value:any, type:Type, line, column){
-        let env: Ambito | null = this
+    public setVal(id:string, valor:any, tipo:Type, linea, columna){
+        let entorno: Ambito | null = this
 
-        while(env!=null){
-            if(env.variables.has(id)){
-                const val = env.variables.get(id)
-                if(val.type == type) {
-                    env.variables.set(id, new Simbolo(value, id, type))
+        while(entorno!=null){
+            if(entorno.variables.has(id)){
+                const val = entorno.variables.get(id)
+                if(val.tipo == tipo) {
+                    entorno.variables.set(id, new Simbolo(valor, id, tipo))
                 }else{
-                    throw new ErrorE(line, column, 'Semantico', 'No se puede asignar: ' + type + ' a ' + val.type);
+                    throw new ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + tipo + ' a ' + val.tipo);
                 }
             }
-            env = env.anterior
+            entorno = entorno.anterior
         }
-        this.variables.set(id, new Simbolo(value, id, type))
+        this.variables.set(id, new Simbolo(valor, id, tipo))
     }
 
     public getVal(id:string):Simbolo{
-        let env: Ambito | null = this
-        while(env!=null){
-            if(env.variables.has(id)){
-                return env.variables.get(id)
+        let entorno: Ambito | null = this
+        while(entorno!=null){
+            if(entorno.variables.has(id)){
+                return entorno.variables.get(id)
             }
-            env = env.anterior
+            entorno = entorno.anterior
         }
         
         return null

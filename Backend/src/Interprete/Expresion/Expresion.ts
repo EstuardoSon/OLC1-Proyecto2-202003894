@@ -1,5 +1,6 @@
-import {Retorno, tipoSUMA, tipoRESTA, tipoDIV, tipoMULTI, tipoMODULO, tipoPOTENCIA, Type, tipoRELACIONAL} from "./Retorno";
+import {Retorno, tipoSUMA, tipoRESTA, tipoDIV, tipoMULTI, tipoMODULO, tipoPOTENCIA, Type, tipoRELACIONAL, tipoINCDEC} from "./Retorno";
 import {Operador} from "./Aritmetica";
+import { Ambito } from "../Extra/Ambito";
 
 export abstract class Expresion {
     public linea: number;
@@ -10,7 +11,7 @@ export abstract class Expresion {
         this.columna = columna;
     }
     
-    public abstract ejecutar(): Retorno;
+    public abstract ejecutar(ambito: Ambito): Retorno;
 
     public tipoDominante(Tipo: Operador, fila: Type, columna: Type){
         switch(Tipo){
@@ -34,6 +35,12 @@ export abstract class Expresion {
             }
             case 6:{
                 return tipoRELACIONAL[fila][columna];
+            }
+            case 7:{
+                return tipoINCDEC[fila][columna];
+            }
+            case 8:{
+                return tipoINCDEC[fila][columna];
             }
             default:{
                 return null;

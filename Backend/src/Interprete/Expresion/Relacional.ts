@@ -1,3 +1,4 @@
+import { Ambito } from "../Extra/Ambito";
 import { Expresion } from "./Expresion";
 import { Retorno } from "./Retorno";
 
@@ -7,9 +8,9 @@ export class Relacional extends Expresion {
         super(linea, columna);
     }
 
-    public ejecutar(): Retorno {
-        const valorIzquierda = this.izq.ejecutar();
-        const valorDerecha = this.der.ejecutar();
+    public ejecutar(ambito: Ambito): Retorno {
+        const valorIzquierda = this.izq.ejecutar(ambito);
+        const valorDerecha = this.der.ejecutar(ambito);
 
         var dominante = this.tipoDominante(6, valorIzquierda.type, valorDerecha.type);
 
@@ -26,35 +27,35 @@ export class Relacional extends Expresion {
             else { valorDer = Number(valorDerecha.value) }
 
             if (this.tipo == 0) {
-                const result = valorIz == valorDer
+                const result = Boolean(valorIz == valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 1) {
-                const result = valorIz != valorDer
+                const result = Boolean(valorIz != valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 2) {
-                const result = valorIz > valorDer
+                const result = Boolean(valorIz > valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 3) {
-                const result = valorIz >= valorDer
+                const result = Boolean(valorIz >= valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 4) {
-                const result = valorIz < valorDer
+                const result = Boolean(valorIz < valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 5) {
-                const result = valorIz <= valorDer
+                const result = Boolean(valorIz <= valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 6) {
-                const result = valorIz && valorDer
+                const result = Boolean(valorIz && valorDer)
                 return { value: result, type: dominante }
 
             } else if (this.tipo == 7) {
-                const result = valorIz || valorDer
+                const result = Boolean(valorIz || valorDer)
                 return { value: result, type: dominante }
             }
         }

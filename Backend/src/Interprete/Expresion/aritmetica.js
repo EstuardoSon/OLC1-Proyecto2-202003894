@@ -16,6 +16,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.Operador = exports.Aritmetica = void 0;
+var Error_1 = require("../Error/Error");
 var Expresion_1 = require("./Expresion");
 var Aritmetica = /** @class */ (function (_super) {
     __extends(Aritmetica, _super);
@@ -26,44 +27,229 @@ var Aritmetica = /** @class */ (function (_super) {
         _this.operador = operador;
         return _this;
     }
-    Aritmetica.prototype.ejecutar = function () {
-        var valorIzquierda = this.izq.ejecutar();
-        var valorDerecha = this.der.ejecutar();
+    Aritmetica.prototype.ejecutar = function (ambito) {
+        var valorIzquierda = this.izq.ejecutar(ambito);
+        var valorDerecha = this.der.ejecutar(ambito);
         var dominante = this.tipoDominante(this.operador, valorIzquierda.type, valorDerecha.type);
-        if (this.operador == 0) {
-            if (dominante == 0) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: Math.round(valorIz + valorDer), type: dominante };
+        if (dominante == null) {
+            switch (this.operador) {
+                case 0:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " + " + valorDerecha.value);
+                case 1:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " - " + valorDerecha.value);
+                case 2:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " * " + valorDerecha.value);
+                case 3:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " / " + valorDerecha.value);
+                case 4:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " ^ " + valorDerecha.value);
+                case 5:
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " % " + valorDerecha.value);
             }
-            else if (dominante == 1) {
+        }
+        else {
+            if (this.operador == 0) {
+                if (dominante == 0) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: Math.round(valorIz + valorDer), type: dominante };
+                }
+                else if (dominante == 1) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: valorIz + valorDer, type: dominante };
+                }
+                else if (dominante == 4) {
+                    return { value: valorIzquierda.value.toString() + valorDerecha.value.toString(), type: dominante };
+                }
+            }
+            else if (this.operador == 1) {
+                if (dominante == 0) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: Math.round(valorIz - valorDer), type: dominante };
+                }
+                else if (dominante == 1) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: valorIz - valorDer, type: dominante };
+                }
+            }
+            else if (this.operador == 2) {
+                if (dominante == 0) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: Math.round(valorIz * valorDer), type: dominante };
+                }
+                else if (dominante == 1) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: valorIz * valorDer, type: dominante };
+                }
+            }
+            else if (this.operador == 3) {
                 var valorIz = void 0, valorDer = void 0;
                 if (valorIzquierda.type == 3) {
                     valorIz = valorIzquierda.value.chartCodeAt(0);
@@ -93,273 +279,123 @@ var Aritmetica = /** @class */ (function (_super) {
                 else {
                     valorDer = Number(valorDerecha.value);
                 }
+                if (valorDer != 0) {
+                    return { value: valorIz / valorDer, type: dominante };
+                }
+                else {
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar: " + valorIzquierda.value + " / " + valorDerecha.value);
+                }
+            }
+            else if (this.operador == 4) {
+                if (dominante == 0) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: Math.round(Math.pow(valorIz, valorDer)), type: dominante };
+                }
+                else if (dominante == 1) {
+                    var valorIz = void 0, valorDer = void 0;
+                    if (valorIzquierda.type == 3) {
+                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                    }
+                    else if (valorIzquierda.type == 2) {
+                        if (valorIzquierda.value) {
+                            valorIz = 1;
+                        }
+                        else {
+                            valorIz = 0;
+                        }
+                    }
+                    else {
+                        valorIz = Number(valorIzquierda.value);
+                    }
+                    if (valorDerecha.type == 3) {
+                        valorDer = valorDerecha.value.chartCodeAt(0);
+                    }
+                    else if (valorDerecha.type == 2) {
+                        if (valorDerecha.value) {
+                            valorDer = 1;
+                        }
+                        else {
+                            valorDer = 0;
+                        }
+                    }
+                    else {
+                        valorDer = Number(valorDerecha.value);
+                    }
+                    return { value: Math.pow(valorIz, valorDer), type: dominante };
+                }
+            }
+            else if (this.operador == 5) {
+                var valorIz = void 0, valorDer = void 0;
+                if (valorIzquierda.type == 3) {
+                    valorIz = valorIzquierda.value.chartCodeAt(0);
+                }
+                else if (valorIzquierda.type == 2) {
+                    if (valorIzquierda.value) {
+                        valorIz = 1;
+                    }
+                    else {
+                        valorIz = 0;
+                    }
+                }
+                else {
+                    valorIz = Number(valorIzquierda.value);
+                }
+                if (valorDerecha.type == 3) {
+                    valorDer = valorDerecha.value.chartCodeAt(0);
+                }
+                else if (valorDerecha.type == 2) {
+                    if (valorDerecha.value) {
+                        valorDer = 1;
+                    }
+                    else {
+                        valorDer = 0;
+                    }
+                }
+                else {
+                    valorDer = Number(valorDerecha.value);
+                }
+                return { value: valorIz % valorDer, type: dominante };
+            }
+            else if (this.operador == 7) {
+                var valorIz = void 0, valorDer = void 0;
+                valorIz = Number(valorIzquierda.value);
+                valorDer = Number(valorDerecha.value);
                 return { value: valorIz + valorDer, type: dominante };
             }
-            else if (dominante == 4) {
-                return { value: valorIzquierda.value.toString() + valorDerecha.value.toString(), type: dominante };
-            }
-        }
-        else if (this.operador == 1) {
-            if (dominante == 0) {
+            else if (this.operador == 8) {
                 var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: Math.round(valorIz - valorDer), type: dominante };
-            }
-            else if (dominante == 1) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
+                valorIz = Number(valorIzquierda.value);
+                valorDer = Number(valorDerecha.value);
                 return { value: valorIz - valorDer, type: dominante };
             }
-        }
-        else if (this.operador == 2) {
-            if (dominante == 0) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: Math.round(valorIz * valorDer), type: dominante };
-            }
-            else if (dominante == 1) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: valorIz * valorDer, type: dominante };
-            }
-        }
-        else if (this.operador == 3) {
-            var valorIz = void 0, valorDer = void 0;
-            if (valorIzquierda.type == 3) {
-                valorIz = valorIzquierda.value.chartCodeAt(0);
-            }
-            else if (valorIzquierda.type == 2) {
-                if (valorIzquierda.value) {
-                    valorIz = 1;
-                }
-                else {
-                    valorIz = 0;
-                }
-            }
-            else {
-                valorIz = Number(valorIzquierda.value);
-            }
-            if (valorDerecha.type == 3) {
-                valorDer = valorDerecha.value.chartCodeAt(0);
-            }
-            else if (valorDerecha.type == 2) {
-                if (valorDerecha.value) {
-                    valorDer = 1;
-                }
-                else {
-                    valorDer = 0;
-                }
-            }
-            else {
-                valorDer = Number(valorDerecha.value);
-            }
-            return { value: valorIz / valorDer, type: dominante };
-        }
-        else if (this.operador == 4) {
-            if (dominante == 0) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: Math.round(Math.pow(valorIz, valorDer)), type: dominante };
-            }
-            else if (dominante == 1) {
-                var valorIz = void 0, valorDer = void 0;
-                if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
-                }
-                else if (valorIzquierda.type == 2) {
-                    if (valorIzquierda.value) {
-                        valorIz = 1;
-                    }
-                    else {
-                        valorIz = 0;
-                    }
-                }
-                else {
-                    valorIz = Number(valorIzquierda.value);
-                }
-                if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
-                }
-                else if (valorDerecha.type == 2) {
-                    if (valorDerecha.value) {
-                        valorDer = 1;
-                    }
-                    else {
-                        valorDer = 0;
-                    }
-                }
-                else {
-                    valorDer = Number(valorDerecha.value);
-                }
-                return { value: Math.pow(valorIz, valorDer), type: dominante };
-            }
-        }
-        else if (this.operador == 5) {
-            var valorIz = void 0, valorDer = void 0;
-            if (valorIzquierda.type == 3) {
-                valorIz = valorIzquierda.value.chartCodeAt(0);
-            }
-            else if (valorIzquierda.type == 2) {
-                if (valorIzquierda.value) {
-                    valorIz = 1;
-                }
-                else {
-                    valorIz = 0;
-                }
-            }
-            else {
-                valorIz = Number(valorIzquierda.value);
-            }
-            if (valorDerecha.type == 3) {
-                valorDer = valorDerecha.value.chartCodeAt(0);
-            }
-            else if (valorDerecha.type == 2) {
-                if (valorDerecha.value) {
-                    valorDer = 1;
-                }
-                else {
-                    valorDer = 0;
-                }
-            }
-            else {
-                valorDer = Number(valorDerecha.value);
-            }
-            return { value: valorIz % valorDer, type: dominante };
         }
         return { value: null, type: null };
     };
@@ -375,4 +411,6 @@ var Operador;
     Operador[Operador["POTENCIA"] = 4] = "POTENCIA";
     Operador[Operador["MODULO"] = 5] = "MODULO";
     Operador[Operador["RELACIONAL"] = 6] = "RELACIONAL";
+    Operador[Operador["INCREMENTO"] = 7] = "INCREMENTO";
+    Operador[Operador["DECREMENTO"] = 8] = "DECREMENTO";
 })(Operador = exports.Operador || (exports.Operador = {}));

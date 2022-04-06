@@ -30,6 +30,12 @@ var Expresion = /** @class */ (function () {
             case 6: {
                 return Retorno_1.tipoRELACIONAL[fila][columna];
             }
+            case 7: {
+                return Retorno_1.tipoINCDEC[fila][columna];
+            }
+            case 8: {
+                return Retorno_1.tipoINCDEC[fila][columna];
+            }
             default: {
                 return null;
             }

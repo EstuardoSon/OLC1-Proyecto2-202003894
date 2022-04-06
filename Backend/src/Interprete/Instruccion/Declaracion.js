@@ -16,31 +16,37 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.Declaracion = void 0;
+var Error_1 = require("../Error/Error");
 var Instruccion_1 = require("../Instruccion/Instruccion");
 var Declaracion = /** @class */ (function (_super) {
     __extends(Declaracion, _super);
-    function Declaracion(linea, columna, nombre, valor) {
+    function Declaracion(linea, columna, nombre, valor, tipoVariable) {
         var _this = _super.call(this, linea, columna) || this;
         _this.nombre = nombre;
         _this.valor = valor;
+        _this.tipoVariable = tipoVariable;
         return _this;
     }
     Declaracion.prototype.ejecutar = function (ambito) {
-        var valorAnterior = this.valor.ejecutar();
-        ambito.setVal(this.nombre, valorAnterior.value, valorAnterior.type, this.linea, this.columna);
-    };
-    Declaracion.prototype.setValor = function (valor) {
-        this.valor = valor;
+        if (this.valor != null) {
+            var value = this.valor.ejecutar(ambito);
+            if (this.realizarComprobacion(value.type)) {
+                ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna);
+            }
+            else {
+                ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna);
+            }
+        }
     };
     Declaracion.prototype.realizarComprobacion = function (tipo) {
         if (this.valor != null) {
-            if (this.valor.ejecutar().type == tipo) {
+            if (this.tipoVariable == tipo) {
                 return true;
             }
-            return false;
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible la asignacion de la variable: " + this.nombre + ", ya que su valor no es el adecuado");
         }
         else {
-            return true;
+            return false;
         }
     };
     return Declaracion;
