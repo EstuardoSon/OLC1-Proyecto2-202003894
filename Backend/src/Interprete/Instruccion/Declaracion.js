@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.Declaracion = void 0;
+exports.Inicializacion = exports.Declaracion = void 0;
 var Error_1 = require("../Error/Error");
 var Instruccion_1 = require("../Instruccion/Instruccion");
 var Declaracion = /** @class */ (function (_super) {
@@ -33,9 +33,9 @@ var Declaracion = /** @class */ (function (_super) {
             if (this.realizarComprobacion(value.type)) {
                 ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna);
             }
-            else {
-                ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna);
-            }
+        }
+        else {
+            ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna);
         }
     };
     Declaracion.prototype.realizarComprobacion = function (tipo) {
@@ -52,3 +52,18 @@ var Declaracion = /** @class */ (function (_super) {
     return Declaracion;
 }(Instruccion_1.Instruccion));
 exports.Declaracion = Declaracion;
+var Inicializacion = /** @class */ (function (_super) {
+    __extends(Inicializacion, _super);
+    function Inicializacion(linea, columna, nombre, valor) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.nombre = nombre;
+        _this.valor = valor;
+        return _this;
+    }
+    Inicializacion.prototype.ejecutar = function (ambito) {
+        var value = this.valor.ejecutar(ambito);
+        ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna);
+    };
+    return Inicializacion;
+}(Instruccion_1.Instruccion));
+exports.Inicializacion = Inicializacion;

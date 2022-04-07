@@ -16,10 +16,10 @@ export class Declaracion extends Instruccion {
             if(this.realizarComprobacion(value.type)){
                 ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna)
             }
-            else{
-                ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna) 
-            }
-        }      
+        }
+        else{
+            ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna)   
+        }    
     }
 
     public realizarComprobacion(tipo:Type){
@@ -31,5 +31,16 @@ export class Declaracion extends Instruccion {
         } else {
             return false;
         }
+    }
+}
+
+export class Inicializacion extends Instruccion {
+    constructor(linea: number, columna: number, public nombre:string, public valor:Expresion){
+        super(linea, columna);
+    }
+
+    public ejecutar(ambito: Ambito) {
+        let value = this.valor.ejecutar(ambito);
+        ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna)
     }
 }

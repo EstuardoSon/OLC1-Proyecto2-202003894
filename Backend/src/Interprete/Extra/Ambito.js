@@ -11,24 +11,24 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.setVal = function (id, valor, tipo, linea, columna) {
         var entorno = this;
         while (entorno != null) {
-            if (entorno.variables.has(id)) {
+            if (entorno.variables.has(id.toLocaleLowerCase())) {
                 var val = entorno.variables.get(id);
                 if (val.tipo == tipo) {
-                    entorno.variables.set(id, new Simbolo_1.Simbolo(valor, id, tipo));
+                    entorno.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo));
                 }
                 else {
-                    throw new Error_1.ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + tipo + ' a ' + val.tipo);
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + valor + ' a ' + id + " porque no son del mismo tipo");
                 }
             }
             entorno = entorno.anterior;
         }
-        this.variables.set(id, new Simbolo_1.Simbolo(valor, id, tipo));
+        this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo));
     };
     Ambito.prototype.getVal = function (id) {
         var entorno = this;
         while (entorno != null) {
-            if (entorno.variables.has(id)) {
-                return entorno.variables.get(id);
+            if (entorno.variables.has(id.toLocaleLowerCase())) {
+                return entorno.variables.get(id.toLocaleLowerCase());
             }
             entorno = entorno.anterior;
         }

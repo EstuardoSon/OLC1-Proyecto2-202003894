@@ -13,24 +13,24 @@ export class Ambito{
         let entorno: Ambito | null = this
 
         while(entorno!=null){
-            if(entorno.variables.has(id)){
+            if(entorno.variables.has(id.toLocaleLowerCase())){
                 const val = entorno.variables.get(id)
                 if(val.tipo == tipo) {
-                    entorno.variables.set(id, new Simbolo(valor, id, tipo))
+                    entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo))
                 }else{
-                    throw new ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + tipo + ' a ' + val.tipo);
+                    throw new ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + valor + ' a ' + id + " porque no son del mismo tipo");
                 }
             }
             entorno = entorno.anterior
         }
-        this.variables.set(id, new Simbolo(valor, id, tipo))
+        this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo))
     }
 
     public getVal(id:string):Simbolo{
         let entorno: Ambito | null = this
         while(entorno!=null){
-            if(entorno.variables.has(id)){
-                return entorno.variables.get(id)
+            if(entorno.variables.has(id.toLocaleLowerCase())){
+                return entorno.variables.get(id.toLocaleLowerCase())
             }
             entorno = entorno.anterior
         }

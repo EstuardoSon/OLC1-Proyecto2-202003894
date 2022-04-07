@@ -64,6 +64,7 @@ export class EditorComponent implements OnInit{
       },
       err => {
         console.log("Error en la Peticion");
+        console.log(err);
       }
     )
   }

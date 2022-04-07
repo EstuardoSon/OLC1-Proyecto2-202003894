@@ -11,7 +11,10 @@ export class Llamado extends Expresion {
     public ejecutar(ambito: Ambito): Retorno {
         const value = ambito.getVal(this.nombre)
         if (value != null) {
-            return { value: value.valor, type: value.tipo }
+            if(value.valor != null){
+                return { value: value.valor, type: value.tipo }
+            }
+            throw new ErrorE(this.linea, this.columna, 'Semantico', 'Variable ' + this.nombre + ' declarada pero no inicializada'); 
         }
         else {
             throw new ErrorE(this.linea, this.columna, 'Semantico', 'No existe una declaracion de la variable ' + this.nombre + '');

@@ -1,9 +1,11 @@
 %{
-    const {Aritmetica, Operador} = require('../Expresion/aritmetica')
+    const {Aritmetica} = require('../Expresion/aritmetica')
     const {Relacional} = require('../Expresion/Relacional')
+    const {Negacion} = require('../Expresion/Negacion')
+    const {Ternario} = require('../Expresion/Ternario')
     const {Literal} = require('../Expresion/Literal')
     const {ErrorE} = require('../Error/Error')
-    const {Declaracion} = require('../Instruccion/Declaracion')
+    const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
     const {Llamado} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
     Errores = []
@@ -94,6 +96,7 @@
 . { Errores.push(new ErrorE(yylloc.first_line, yylloc.first_column,'Lexico',yytext)) }
 /lex
 
+%right 'TERNARIO'
 %left 'OR'
 %left 'AND'
 %right 'NEGACION'
@@ -102,6 +105,7 @@
 %left 'DIVISION' 'MULTIPLICACION'
 %nonassoc 'POTENCIA'
 %nonassoc 'DECREMENTO' 'INCREMENTO'
+%nonassoc 'NEGACION'
 %right UMINUS
 %start ini
 
@@ -120,6 +124,7 @@ Instrucciones
 
 TipoInstruccion
     : Declaraciones 
+    | Inicializacion
     | Print
     | Println
     | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
@@ -131,6 +136,10 @@ Declaraciones
     | BOOLEAN Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],2)) } $$=arreglo }
     | CHAR Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],3)) } $$=arreglo }
     | STRING Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],4)) } $$=arreglo }
+;
+
+Inicializacion
+    : IDENTIFICADOR ASIGNACION Valor PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
 ;
 
 Variables
@@ -161,8 +170,8 @@ Valor
     | Valor AND Valor { $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
     | Valor INCREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column) }
     | Valor DECREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column) }
-    | Valor TERNARIO Valor DOSPT Valor {  } 
-    | NEGACION Valor {  }
+    | Valor TERNARIO Valor DOSPT Valor { $$ = new Ternario($1, $3, $5, @1.first_line, @1.first_column) } 
+    | NEGACION Valor { $$ = new Negacion($2,2, @1.first_line, @1.first_column) }
     | PARABRE Valor PARCIERRE { $$ = $2 }
     | ENTERO {$$ = new Literal($1,0, @1.first_line, @1.first_column) }
     | DECIMAL { $$ = new Literal($1,1, @1.first_line, @1.first_column) }
@@ -171,6 +180,10 @@ Valor
     | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
     | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
     | IDENTIFICADOR { $$ = new Llamado($1, @1.first_line, @1.first_column) }
+    | PARABRE INT PARCIERRE Valor {}
+    | PARABRE DOUBLE PARCIERRE Valor {}
+    | PARABRE CHAR PARCIERRE Valor {}
+    | PARABRE STRING PARCIERRE Valor {}
 ;
 
 Print

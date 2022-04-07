@@ -1,3 +1,4 @@
+import { ErrorE } from "../Error/Error";
 import { Ambito } from "../Extra/Ambito";
 import { Expresion } from "./Expresion";
 import { Retorno, Type } from "./Retorno";
@@ -35,8 +36,8 @@ export class Literal extends Expresion{
             return {value: String(this.valor), type: 3 };
         }
         else if(this.tipo == 4){
-            return {value: String(this.valor).replace("\\n","\n").replace("\\t","\t").replace("\\\"","\"").replace("\\'","\'").replace("\\n","\r").replace("\\\\","\\"), type: 4 };
+            return {value: String(this.valor).replace("\\n","\n").replace("\\t","\t").replace("\\\"","\"").replace("\\'","\'").replace("\\r","\r").replace("\\\\","\\"), type: 4 };
         }
-        return {value: null, type: 4}
+        throw new ErrorE(this.linea, this.columna, 'Semantico', 'No se fue posible detectar el tipo de valor al que se refiere'+this.valor);
     }
 }

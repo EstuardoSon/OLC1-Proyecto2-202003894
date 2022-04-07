@@ -15,28 +15,27 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.Llamado = void 0;
+exports.Negacion = void 0;
 var Error_1 = require("../Error/Error");
 var Expresion_1 = require("./Expresion");
-var Llamado = /** @class */ (function (_super) {
-    __extends(Llamado, _super);
-    function Llamado(nombre, linea, columna) {
+var Negacion = /** @class */ (function (_super) {
+    __extends(Negacion, _super);
+    function Negacion(valor, tipo, linea, columna) {
         var _this = _super.call(this, linea, columna) || this;
-        _this.nombre = nombre;
+        _this.valor = valor;
+        _this.tipo = tipo;
         return _this;
     }
-    Llamado.prototype.ejecutar = function (ambito) {
-        var value = ambito.getVal(this.nombre);
-        if (value != null) {
-            if (value.valor != null) {
-                return { value: value.valor, type: value.tipo };
+    Negacion.prototype.ejecutar = function (ambito) {
+        var value = this.valor.ejecutar(ambito);
+        if (value.type == 2) {
+            if (value.value == true) {
+                return { value: false, type: 2 };
             }
-            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'Variable ' + this.nombre + ' declarada pero no inicializada');
+            return { value: true, type: 2 };
         }
-        else {
-            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No existe una declaracion de la variable ' + this.nombre + '');
-        }
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No se fue posible realizar la negacion de ' + value.value + ' ya que no es booleano');
     };
-    return Llamado;
+    return Negacion;
 }(Expresion_1.Expresion));
-exports.Llamado = Llamado;
+exports.Negacion = Negacion;
