@@ -3,6 +3,8 @@
     const {Relacional} = require('../Expresion/Relacional')
     const {Negacion} = require('../Expresion/Negacion')
     const {Ternario} = require('../Expresion/Ternario')
+    const {TOString, TOLower, TOUpper, LENGHT} = require('../Expresion/TO')
+    const {Casteo} = require('../Expresion/Casteo')
     const {Literal} = require('../Expresion/Literal')
     const {ErrorE} = require('../Error/Error')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
@@ -52,6 +54,7 @@
 "tostring" return 'TOSTRING';
 "tochararray" return 'TOCHARARRAY';
 "run" return 'RUN';
+"new" return 'NEW';
 
 //EXPRESIONES
 
@@ -100,12 +103,12 @@
 %left 'OR'
 %left 'AND'
 %right 'NEGACION'
-%left 'IGUAL' 'DIFERENTE' 'MENOR' 'MENORIGUAL' 'MAYOR' 'MAYORIGUAL'
+%left 'IGUAL' 'DIFERENTE' 'MENORIGUAL' 'MENOR' 'MAYORIGUAL' 'MAYOR' 
 %left 'SUMA' 'RESTA'
-%left 'DIVISION' 'MULTIPLICACION'
+%left 'DIVISION' 'MULTIPLICACION' 'MODULO'
 %nonassoc 'POTENCIA'
 %nonassoc 'DECREMENTO' 'INCREMENTO'
-%nonassoc 'NEGACION'
+%right CAST1 CAST2 CAST3 CAST4
 %right UMINUS
 %start ini
 
@@ -124,18 +127,40 @@ Instrucciones
 
 TipoInstruccion
     : Declaraciones 
+    | Arreglos { $$ = [] }
     | Inicializacion
     | Print
     | Println
     | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
 ;
 
+TipoVar
+    : INT { $$ = 0 }
+    | DOUBLE { $$ = 1 }
+    | BOOLEAN { $$ = 2 }
+    | CHAR { $$ = 3 }
+    | STRING { $$ = 4 }
+;
+
 Declaraciones
-    : INT Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],0)) } $$=arreglo }
-    | DOUBLE Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],1)) } $$=arreglo }
-    | BOOLEAN Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],2)) } $$=arreglo }
-    | CHAR Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],3)) } $$=arreglo }
-    | STRING Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],4)) } $$=arreglo }
+    : TipoVar Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],$1)) } $$=arreglo }
+;
+
+Arreglos
+    : TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA {  } 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA {  }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA {  }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA {  }
+;
+
+ListaValores
+    : ListaValores COMA Valor { $1.push($3); $$ = $1 }
+    | Valor { $$ = [$1] }
+;
+
+ListaVectores
+    : ListaVectores COMA CORCHETEABRE ListaValores CORCHETECIERRE { $1.push($4); $$ = $1 }
+    | CORCHETEABRE ListaValores CORCHETECIERRE { $$ = [$2] }
 ;
 
 Inicializacion
@@ -180,10 +205,11 @@ Valor
     | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
     | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
     | IDENTIFICADOR { $$ = new Llamado($1, @1.first_line, @1.first_column) }
-    | PARABRE INT PARCIERRE Valor {}
-    | PARABRE DOUBLE PARCIERRE Valor {}
-    | PARABRE CHAR PARCIERRE Valor {}
-    | PARABRE STRING PARCIERRE Valor {}
+    | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
+    | TOSTRING PARABRE Valor PARCIERRE { $$ = new TOString($3, @1.first_line, @1.first_column) }
+    | LENGTH PARABRE Valor PARCIERRE { $$ = new LENGHT($3, @1.first_line, @1.first_column) }
+    | TOLOWER PARABRE Valor PARCIERRE { $$ = new TOLower($3, @1.first_line, @1.first_column) }
+    | TOUPPER PARABRE Valor PARCIERRE { $$ = new TOUpper($3, @1.first_line, @1.first_column) }
 ;
 
 Print

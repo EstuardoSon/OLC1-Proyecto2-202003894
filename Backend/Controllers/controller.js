@@ -1,6 +1,8 @@
 const { Ambito } = require('../src/Interprete/Extra/Ambito');
 var parser = require('../src/Interprete/Grammar/grammar');
 
+var ContenidoEditor ={ Codigo: "", Error: "" }
+
 exports.index = async (req, res) => {
     res.send({ "Controlador": "Estuardo" })
 }
