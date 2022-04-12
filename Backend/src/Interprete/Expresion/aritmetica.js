@@ -30,6 +30,12 @@ var Aritmetica = /** @class */ (function (_super) {
     Aritmetica.prototype.ejecutar = function (ambito) {
         var valorIzquierda = this.izq.ejecutar(ambito);
         var valorDerecha = this.der.ejecutar(ambito);
+        if (typeof (valorIzquierda.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que [".concat(valorIzquierda.value, "] no es un dato primitivo"));
+        }
+        if (typeof (valorDerecha.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que [".concat(valorDerecha.value, "] no es un dato primitivo"));
+        }
         var dominante = this.tipoDominante(this.operador, valorIzquierda.type, valorDerecha.type);
         if (dominante == null) {
             switch (this.operador) {

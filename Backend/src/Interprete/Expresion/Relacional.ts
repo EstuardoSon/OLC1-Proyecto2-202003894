@@ -1,3 +1,4 @@
+import { ErrorE } from "../Error/Error";
 import { Ambito } from "../Extra/Ambito";
 import { Expresion } from "./Expresion";
 import { Retorno } from "./Retorno";
@@ -11,6 +12,9 @@ export class Relacional extends Expresion {
     public ejecutar(ambito: Ambito): Retorno {
         const valorIzquierda = this.izq.ejecutar(ambito);
         const valorDerecha = this.der.ejecutar(ambito);
+        
+        if (typeof(valorIzquierda.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valorIzquierda.value} no es un dato primitivo`) }
+        if (typeof(valorDerecha.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valorDerecha.value} no es un dato primitivo`) }
 
         var dominante = this.tipoDominante(6, valorIzquierda.type, valorDerecha.type);
 

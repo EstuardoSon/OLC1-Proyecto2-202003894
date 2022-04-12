@@ -12,6 +12,8 @@ export class Negacion extends Expresion{
     public ejecutar(ambito: Ambito): Retorno {
         const value = this.valor.ejecutar(ambito);
 
+        if (typeof(value.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${value.value} no es un dato primitivo`) }
+
         if (value.type == 2){
             if(value.value == true){
                 return {value: false, type: 2}

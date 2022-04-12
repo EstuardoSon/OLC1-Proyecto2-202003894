@@ -12,6 +12,8 @@ export class Casteo extends Expresion {
     public ejecutar(ambito: Ambito): Retorno {
         const value = this.valor.ejecutar(ambito)
 
+        if (typeof(value.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${value.value} no es un dato primitivo`) }
+
         if (this.tipo == 0) {
             if (value.type == 0) {
                 return { value: value.value, type: value.type }

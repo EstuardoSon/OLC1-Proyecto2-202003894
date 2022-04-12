@@ -35,7 +35,20 @@ var Declaracion = /** @class */ (function (_super) {
             }
         }
         else {
-            ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna);
+            var valorDefecto = null;
+            if (this.tipoVariable == 0 || this.tipoVariable == 1) {
+                valorDefecto = 0;
+            }
+            else if (this.tipoVariable == 2) {
+                valorDefecto = false;
+            }
+            else if (this.tipoVariable == 3) {
+                valorDefecto = '\u0000';
+            }
+            else if (this.tipoVariable == 4) {
+                valorDefecto = null;
+            }
+            ambito.setVal(this.nombre, valorDefecto, this.tipoVariable, this.linea, this.columna);
         }
     };
     Declaracion.prototype.realizarComprobacion = function (tipo) {
@@ -62,7 +75,7 @@ var Inicializacion = /** @class */ (function (_super) {
     }
     Inicializacion.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
-        ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna);
+        ambito.modVal(this.nombre, value.value, value.type, this.linea, this.columna);
     };
     return Inicializacion;
 }(Instruccion_1.Instruccion));

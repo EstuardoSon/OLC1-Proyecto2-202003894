@@ -14,6 +14,10 @@ export class Ternario extends Expresion{
         const valor1 = this.valor1.ejecutar(ambito);
         const valor2 = this.valor2.ejecutar(ambito);
 
+        if (typeof(condicion.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${condicion.value} no es un dato primitivo`) }
+        if (typeof(valor1.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valor1.value} no es un dato primitivo`) }
+        if (typeof(valor2.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valor2.value} no es un dato primitivo`) }
+
         if(valor1.type == valor2.type){
             if (condicion.type == 2){
                 if (condicion.value){

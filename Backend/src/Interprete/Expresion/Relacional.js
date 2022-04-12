@@ -16,6 +16,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 exports.__esModule = true;
 exports.tipoRelacional = exports.Relacional = void 0;
+var Error_1 = require("../Error/Error");
 var Expresion_1 = require("./Expresion");
 var Relacional = /** @class */ (function (_super) {
     __extends(Relacional, _super);
@@ -29,6 +30,12 @@ var Relacional = /** @class */ (function (_super) {
     Relacional.prototype.ejecutar = function (ambito) {
         var valorIzquierda = this.izq.ejecutar(ambito);
         var valorDerecha = this.der.ejecutar(ambito);
+        if (typeof (valorIzquierda.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valorIzquierda.value, " no es un dato primitivo"));
+        }
+        if (typeof (valorDerecha.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valorDerecha.value, " no es un dato primitivo"));
+        }
         var dominante = this.tipoDominante(6, valorIzquierda.type, valorDerecha.type);
         if (dominante != null) {
             var valorIz = void 0, valorDer = void 0;

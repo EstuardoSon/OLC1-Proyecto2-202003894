@@ -28,6 +28,9 @@ var Negacion = /** @class */ (function (_super) {
     }
     Negacion.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(value.value, " no es un dato primitivo"));
+        }
         if (value.type == 2) {
             if (value.value == true) {
                 return { value: false, type: 2 };

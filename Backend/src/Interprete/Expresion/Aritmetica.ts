@@ -12,6 +12,9 @@ export class Aritmetica extends Expresion {
         const valorIzquierda = this.izq.ejecutar(ambito)
         const valorDerecha = this.der.ejecutar(ambito)
 
+        if (typeof(valorIzquierda.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que [${valorIzquierda.value}] no es un dato primitivo`) }
+        if (typeof(valorDerecha.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que [${valorDerecha.value}] no es un dato primitivo`) }
+
         var dominante = this.tipoDominante(this.operador, valorIzquierda.type, valorDerecha.type);
 
         if (dominante == null) { 

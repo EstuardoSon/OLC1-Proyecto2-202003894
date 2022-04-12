@@ -18,7 +18,13 @@ export class Declaracion extends Instruccion {
             }
         }
         else{
-            ambito.setVal(this.nombre, null, this.tipoVariable, this.linea, this.columna)   
+            let valorDefecto = null;
+            if(this.tipoVariable == 0 || this.tipoVariable == 1){ valorDefecto = 0 }
+            else if (this.tipoVariable == 2) { valorDefecto = false }
+            else if (this.tipoVariable == 3) { valorDefecto = '\u0000' }
+            else if(this.tipoVariable == 4){ valorDefecto = null }
+
+            ambito.setVal(this.nombre, valorDefecto, this.tipoVariable, this.linea, this.columna)   
         }    
     }
 
@@ -41,6 +47,6 @@ export class Inicializacion extends Instruccion {
 
     public ejecutar(ambito: Ambito) {
         let value = this.valor.ejecutar(ambito);
-        ambito.setVal(this.nombre, value.value, value.type, this.linea, this.columna)
+        ambito.modVal(this.nombre, value.value, value.type, this.linea, this.columna)
     }
 }

@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.LENGHT = exports.TOLower = exports.TOUpper = exports.TOString = void 0;
+exports.TypeOF = exports.LENGHT2 = exports.LENGHT = exports.TOLower = exports.TOUpper = exports.TOString = void 0;
 var Error_1 = require("../Error/Error");
 var Expresion_1 = require("./Expresion");
 var TOString = /** @class */ (function (_super) {
@@ -27,6 +27,9 @@ var TOString = /** @class */ (function (_super) {
     }
     TOString.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion ToLower ya que: [' + value.value + '] no es un dato primitivo apropiado');
+        }
         if (value.type == 0 || value.type == 1 || value.type == 3) {
             return { value: String(value.value), type: 4 };
         }
@@ -44,6 +47,9 @@ var TOUpper = /** @class */ (function (_super) {
     }
     TOUpper.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion ToLower ya que: [' + value.value + '] no es un String');
+        }
         if (value.type == 4) {
             return { value: String(value.value).toUpperCase(), type: 4 };
         }
@@ -61,6 +67,9 @@ var TOLower = /** @class */ (function (_super) {
     }
     TOLower.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion ToLower ya que: [' + value.value + '] no es un String');
+        }
         if (value.type == 4) {
             return { value: String(value.value).toLowerCase(), type: 4 };
         }
@@ -78,11 +87,62 @@ var LENGHT = /** @class */ (function (_super) {
     }
     LENGHT.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
-        if (value.type == 4) {
-            return { value: String(value.value).length, type: 0 };
+        if (typeof (value.value) == 'object') {
+            return { value: value.value.length, type: 0 };
         }
-        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion ToLower ya que: ' + value.value + ' no es un String');
+        if (value.type == 4) {
+            return { value: value.value.length, type: 0 };
+        }
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Length ya que: ' + value.value + ' no es un String o un Vector');
     };
     return LENGHT;
 }(Expresion_1.Expresion));
 exports.LENGHT = LENGHT;
+var LENGHT2 = /** @class */ (function (_super) {
+    __extends(LENGHT2, _super);
+    function LENGHT2(valor, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        return _this;
+    }
+    LENGHT2.prototype.ejecutar = function (ambito) {
+        return { value: this.valor.length, type: 0 };
+    };
+    return LENGHT2;
+}(Expresion_1.Expresion));
+exports.LENGHT2 = LENGHT2;
+var TypeOF = /** @class */ (function (_super) {
+    __extends(TypeOF, _super);
+    function TypeOF(valor, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        return _this;
+    }
+    TypeOF.prototype.ejecutar = function (ambito) {
+        var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object' && typeof (value.value[0]) == 'object') {
+            return { value: "Matriz", type: 4 };
+        }
+        else if (typeof (value.value) == 'object') {
+            return { value: "Vector", type: 4 };
+        }
+        else if (value.type == 0) {
+            return { value: "Int", type: 4 };
+        }
+        else if (value.type == 1) {
+            return { value: "Double", type: 4 };
+        }
+        else if (value.type == 2) {
+            return { value: "Boolean", type: 4 };
+        }
+        else if (value.type == 3) {
+            return { value: "Char", type: 4 };
+        }
+        else if (value.type == 4) {
+            return { value: "String", type: 4 };
+        }
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No fue posible reconocer el tipo de: ' + value.value);
+    };
+    return TypeOF;
+}(Expresion_1.Expresion));
+exports.TypeOF = TypeOF;

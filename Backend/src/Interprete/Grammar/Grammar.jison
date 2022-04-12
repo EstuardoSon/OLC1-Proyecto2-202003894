@@ -3,12 +3,13 @@
     const {Relacional} = require('../Expresion/Relacional')
     const {Negacion} = require('../Expresion/Negacion')
     const {Ternario} = require('../Expresion/Ternario')
-    const {TOString, TOLower, TOUpper, LENGHT} = require('../Expresion/TO')
+    const {TOString, TOLower, TOUpper, LENGHT, LENGHT2, TypeOF} = require('../Expresion/TO')
+    const {VectorDec1, VectorDec2, VectorDec3, MatrizDec1, MatrizDec2, InicializacionV, InicializacionM} = require('../Instruccion/ARRAYyMATRIZ')
     const {Casteo} = require('../Expresion/Casteo')
     const {Literal} = require('../Expresion/Literal')
     const {ErrorE} = require('../Error/Error')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
-    const {Llamado} = require('../Expresion/Llamado')
+    const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
     Errores = []
     exports.Errores = Errores
@@ -127,11 +128,13 @@ Instrucciones
 
 TipoInstruccion
     : Declaraciones 
-    | Arreglos { $$ = [] }
+    | Arreglos
     | Inicializacion
     | Print
     | Println
-    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
+    | Incremento
+    | Decremento
+    | error { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
 ;
 
 TipoVar
@@ -147,10 +150,11 @@ Declaraciones
 ;
 
 Arreglos
-    : TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA {  } 
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA {  }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA {  }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA {  }
+    : TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA { $$ = [new MatrizDec1($2, $1, $9, @1.first_line, @1.first_column)] } 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new MatrizDec2($2, $1, $9, $11, $14, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA { $$ = [new VectorDec1($2, $1, $7, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new VectorDec2($2, $1, $7, $9, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION TOCHARARRAY PARABRE Valor PARCIERRE PTCOMA { $$ = [new VectorDec3($2,$1, $8, @1.first_line, @1.first_column)] }
 ;
 
 ListaValores
@@ -165,6 +169,8 @@ ListaVectores
 
 Inicializacion
     : IDENTIFICADOR ASIGNACION Valor PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor PTCOMA { $$ = [new InicializacionV($1, $3, $6, @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor PTCOMA { $$ = [new InicializacionM($1, $3, $6, $9, @1.first_line, @1.first_column)] }
 ;
 
 Variables
@@ -205,11 +211,16 @@ Valor
     | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
     | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
     | IDENTIFICADOR { $$ = new Llamado($1, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE { $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE { $$ = new LlamadoV($1, $3, @1.first_line, @1.first_column) }
     | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
     | TOSTRING PARABRE Valor PARCIERRE { $$ = new TOString($3, @1.first_line, @1.first_column) }
     | LENGTH PARABRE Valor PARCIERRE { $$ = new LENGHT($3, @1.first_line, @1.first_column) }
+    | LENGTH PARABRE CORCHETEABRE ListaValores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
+    | LENGTH PARABRE CORCHETEABRE ListaVectores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
     | TOLOWER PARABRE Valor PARCIERRE { $$ = new TOLower($3, @1.first_line, @1.first_column) }
     | TOUPPER PARABRE Valor PARCIERRE { $$ = new TOUpper($3, @1.first_line, @1.first_column) }
+    | TYPEOF PARABRE Valor PARCIERRE { $$ = new TypeOF($3, @1.first_line, @1.first_column) }
 ;
 
 Print
@@ -218,4 +229,16 @@ Print
 
 Println
     : PRINTLN PARABRE Valor PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column,$3)] }
+;
+
+Incremento
+    : IDENTIFICADOR INCREMENTO PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO PTCOMA { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO PTCOMA { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+;
+
+Decremento
+    : IDENTIFICADOR DECREMENTO PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO PTCOMA { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO PTCOMA { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
 ;

@@ -17,6 +17,7 @@ exports.ingresarCodigo = async (req, res) => {
             parser.Errores.push(error)
         }
     }
+    console.log(ambi.variables)
 
     let erroresDetec = "";
 

@@ -31,6 +31,15 @@ var Ternario = /** @class */ (function (_super) {
         var condicion = this.condicion.ejecutar(ambito);
         var valor1 = this.valor1.ejecutar(ambito);
         var valor2 = this.valor2.ejecutar(ambito);
+        if (typeof (condicion.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(condicion.value, " no es un dato primitivo"));
+        }
+        if (typeof (valor1.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor1.value, " no es un dato primitivo"));
+        }
+        if (typeof (valor2.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor2.value, " no es un dato primitivo"));
+        }
         if (valor1.type == valor2.type) {
             if (condicion.type == 2) {
                 if (condicion.value) {

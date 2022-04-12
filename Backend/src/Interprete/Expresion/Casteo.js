@@ -28,6 +28,9 @@ var Casteo = /** @class */ (function (_super) {
     }
     Casteo.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(value.value, " no es un dato primitivo"));
+        }
         if (this.tipo == 0) {
             if (value.type == 0) {
                 return { value: value.value, type: value.type };
