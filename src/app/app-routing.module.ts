@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { RouterLinkActive } from '@angular/router';
 import { AppComponent } from './app.component';
 import { EditorComponent } from './editor/editor.component';
+import { ReportesComponent } from './reportes/reportes.component';
 
 const routes: Routes = [
   {
@@ -13,6 +14,10 @@ const routes: Routes = [
   {
     path:'Editor',
     component: EditorComponent
+  },
+  {
+    path:'Reporte',
+    component: ReportesComponent
   }
 ];
 

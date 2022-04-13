@@ -8,4 +8,6 @@ router.post("/Codigo", control.ingresarCodigo)
 
 router.get("/Codigo", control.CodigoIngresado)
 
+router.get("/Error", control.ReporteErrores)
+
 module.exports = router

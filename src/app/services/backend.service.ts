@@ -17,4 +17,8 @@ export class BackendService {
   obtenerAnalisis(){
     return this.http.get(`${this.URL}/Codigo`)
   }
+
+  reporteError(){
+    return this.http.get(`${this.URL}/Error`)
+  }
 }

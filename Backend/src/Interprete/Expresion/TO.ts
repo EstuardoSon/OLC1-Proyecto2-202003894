@@ -55,6 +55,23 @@ export class TOLower extends Expresion {
     }
 }
 
+export class Redondear extends Expresion {
+    constructor(private valor: Expresion, linea: number, columna: number) {
+        super(linea, columna);
+    }
+
+    public ejecutar(ambito: Ambito): Retorno {
+        const value = this.valor.ejecutar(ambito)
+        
+        if (typeof(value.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: ['+value.value+'] no es un Int o Double'); }
+
+        if (value.type == 0 || value.type == 1) {
+            return { value: Math.round(value.value), type: 0 }
+        }
+        throw new ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: '+value.value+' no es un Int o Double');
+    }
+}
+
 export class LENGHT extends Expresion {
     constructor(private valor: Expresion, linea: number, columna: number) {
         super(linea, columna);

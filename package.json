@@ -19,6 +19,7 @@
     "@angular/platform-browser-dynamic": "~13.3.0",
     "@angular/router": "~13.3.0",
     "cors": "^2.8.5",
+    "d3-graphviz": "^4.1.1",
     "express": "^4.17.3",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15",

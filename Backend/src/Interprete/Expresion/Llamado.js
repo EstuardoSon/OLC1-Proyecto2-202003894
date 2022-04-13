@@ -28,7 +28,7 @@ var Llamado = /** @class */ (function (_super) {
     Llamado.prototype.ejecutar = function (ambito) {
         var value = ambito.getVal(this.nombre);
         if (value != null) {
-            if ((value.valor == null && value.tipo == 4) || (value.valor == '\u0000' && value.tipo == 3)) {
+            if (value.valor == null) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'La variable: ' + this.nombre + ' no tiene un valor asignado');
             }
             return { value: value.valor, type: value.tipo };
@@ -66,7 +66,7 @@ var LlamadoM = /** @class */ (function (_super) {
             if (filaV.value < 0 || filaV.value >= value.valor[0].length) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El Indice ingresado en Fila no existe en: ' + this.nombre);
             }
-            if ((value.valor[filaV.value][columnV.value] == null && value.tipo == 4) || (value.valor[filaV.value][columnV.value] == '\u0000' && value.tipo == 3)) {
+            if (value.valor[filaV.value][columnV.value] == null) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El dato : ' + this.nombre + "[".concat(filaV.value, "][").concat(columnV.value, "] ") + ' no tiene un valor asignado');
             }
             return { value: value.valor[filaV.value][columnV.value], type: value.tipo };
@@ -96,7 +96,7 @@ var LlamadoV = /** @class */ (function (_super) {
             if (columnV.value < 0 || columnV.value >= value.valor.length) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El Indice ingresado no existe en el arreglo: ' + this.nombre);
             }
-            if ((value.valor[columnV.value] == null && value.tipo == 4) || (value.valor[columnV.value] == '\u0000' && value.tipo == 3)) {
+            if (value.valor[columnV.value] == null) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El dato: ' + this.nombre + "[".concat(columnV.value, "]") + ' no tiene un valor asignado');
             }
             return { value: value.valor[columnV.value], type: value.tipo };

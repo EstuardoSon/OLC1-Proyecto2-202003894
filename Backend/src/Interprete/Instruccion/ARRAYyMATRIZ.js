@@ -87,21 +87,8 @@ var VectorDec2 = /** @class */ (function (_super) {
                 throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El indice ingresado debe ser positivo');
             }
             var vector = [];
-            var valorDefecto = null;
-            if (this.tipo == 0 || this.tipo == 1) {
-                valorDefecto = 0;
-            }
-            else if (this.tipo == 2) {
-                valorDefecto = false;
-            }
-            else if (this.tipo == 3) {
-                valorDefecto = '\u0000';
-            }
-            else if (this.tipo == 4) {
-                valorDefecto = null;
-            }
             for (var i = 0; i < dato.value; i++) {
-                vector.push(valorDefecto);
+                vector.push(null);
             }
             ambito.setValV(this.nombre, vector, this.tipo, this.linea, this.columna);
         }
@@ -192,23 +179,10 @@ var MatrizDec2 = /** @class */ (function (_super) {
         if (tamanioFila.value <= 0) {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'El indice ingresado en Columna debe ser positivo');
         }
-        var valorDefecto = null;
-        if (this.tipo == 0 || this.tipo == 1) {
-            valorDefecto = 0;
-        }
-        else if (this.tipo == 2) {
-            valorDefecto = false;
-        }
-        else if (this.tipo == 3) {
-            valorDefecto = '\u0000';
-        }
-        else if (this.tipo == 4) {
-            valorDefecto = null;
-        }
         for (var i = 0; i < tamanioFila.value; i++) {
             var vector = [];
             for (var i_1 = 0; i_1 < tamanioFila.value; i_1++) {
-                vector.push(valorDefecto);
+                vector.push(null);
             }
             matriz.push(vector);
         }

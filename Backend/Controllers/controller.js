@@ -1,7 +1,7 @@
 const { Ambito } = require('../src/Interprete/Extra/Ambito');
 var parser = require('../src/Interprete/Grammar/grammar');
-
-var ContenidoEditor ={ Codigo: "", Error: "" }
+var tabla = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Linea</th><th>Columna</th><th>Tipo</th><th>Mensaje</th></tr></thead></table>";
+var ContenidoEditor = { Codigo: "", Error: "" }
 
 exports.index = async (req, res) => {
     res.send({ "Controlador": "Estuardo" })
@@ -21,7 +21,12 @@ exports.ingresarCodigo = async (req, res) => {
 
     let erroresDetec = "";
 
-    for (e of parser.Errores) { erroresDetec += "----- linea: " + e.linea + " columna: " + e.columna + " tipo: " + e.tipo + " mensaje: " + e.mensaje + " -----\n"; }
+    tabla = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Linea</th><th>Columna</th><th>Tipo</th><th>Mensaje</th></tr></thead>";
+    for (e of parser.Errores) {
+        tabla += `<tr><td>${e.linea}</td><td>${e.columna}</td><td>${e.tipo}</td><td>${e.mensaje}</td></tr>`;
+        erroresDetec += "----- linea: " + e.linea + " columna: " + e.columna + " tipo: " + e.tipo + " mensaje: " + e.mensaje + " -----\n";
+    }
+    tabla += "</table>";
 
     var entrada = { Codigo: parser.Impresion, Error: erroresDetec }
 
@@ -35,4 +40,8 @@ exports.ingresarCodigo = async (req, res) => {
 
 exports.CodigoIngresado = async (req, res) => {
     res.send(JSON.stringify(ContenidoEditor))
+}
+
+exports.ReporteErrores = async (req, res) => {
+    res.send(JSON.stringify({ Codigo: tabla }))
 }

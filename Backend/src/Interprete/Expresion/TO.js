@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.TypeOF = exports.LENGHT2 = exports.LENGHT = exports.TOLower = exports.TOUpper = exports.TOString = void 0;
+exports.TypeOF = exports.LENGHT2 = exports.LENGHT = exports.Redondear = exports.TOLower = exports.TOUpper = exports.TOString = void 0;
 var Error_1 = require("../Error/Error");
 var Expresion_1 = require("./Expresion");
 var TOString = /** @class */ (function (_super) {
@@ -78,6 +78,26 @@ var TOLower = /** @class */ (function (_super) {
     return TOLower;
 }(Expresion_1.Expresion));
 exports.TOLower = TOLower;
+var Redondear = /** @class */ (function (_super) {
+    __extends(Redondear, _super);
+    function Redondear(valor, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        return _this;
+    }
+    Redondear.prototype.ejecutar = function (ambito) {
+        var value = this.valor.ejecutar(ambito);
+        if (typeof (value.value) == 'object') {
+            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: [' + value.value + '] no es un Int o Double');
+        }
+        if (value.type == 0 || value.type == 1) {
+            return { value: Math.round(value.value), type: 0 };
+        }
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: ' + value.value + ' no es un Int o Double');
+    };
+    return Redondear;
+}(Expresion_1.Expresion));
+exports.Redondear = Redondear;
 var LENGHT = /** @class */ (function (_super) {
     __extends(LENGHT, _super);
     function LENGHT(valor, linea, columna) {

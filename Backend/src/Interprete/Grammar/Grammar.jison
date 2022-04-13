@@ -3,11 +3,15 @@
     const {Relacional} = require('../Expresion/Relacional')
     const {Negacion} = require('../Expresion/Negacion')
     const {Ternario} = require('../Expresion/Ternario')
-    const {TOString, TOLower, TOUpper, LENGHT, LENGHT2, TypeOF} = require('../Expresion/TO')
+    const {TOString, TOLower, TOUpper, LENGHT, LENGHT2, TypeOF, Redondear} = require('../Expresion/TO')
     const {VectorDec1, VectorDec2, VectorDec3, MatrizDec1, MatrizDec2, InicializacionV, InicializacionM} = require('../Instruccion/ARRAYyMATRIZ')
     const {Casteo} = require('../Expresion/Casteo')
     const {Literal} = require('../Expresion/Literal')
     const {ErrorE} = require('../Error/Error')
+    const {If} = require('../Instruccion/If')
+    const {Ciclo} = require('../Instruccion/Ciclo')
+    const {BREAK} = require('../Instruccion/BreakContinue')
+    const {Entorno, EntornoC, EntornoD} = require('../Instruccion/Entorno')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
     const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
@@ -32,9 +36,9 @@
 "int" return 'INT';
 "double" return 'DOUBLE';
 "boolean" return 'BOOLEAN';
-"if" return 'IF';
 "switch" return 'SWITCH';
 "case" return 'CASE';
+"if" return 'IF';
 "else" return 'ELSE';
 "char" return 'CHAR';
 "string" return 'STRING';
@@ -45,6 +49,7 @@
 "return" return 'RETURN';
 "do" return 'DO';
 "while" return 'WHILE';
+"for" return 'FOR';
 "println" return 'PRINTLN';
 "print" return 'PRINT';
 "tolower" return 'TOLOWER';
@@ -128,13 +133,12 @@ Instrucciones
 
 TipoInstruccion
     : Declaraciones 
-    | Arreglos
-    | Inicializacion
+    | Inicializacion PTCOMA { $$ = $1 }
     | Print
-    | Println
-    | Incremento
-    | Decremento
-    | error { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico")); $$=[] }
+    | If { $$ = [$1] }
+    | Ciclo
+    | Break
+    | error { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado: "+this.$ )); $$=[] }
 ;
 
 TipoVar
@@ -147,10 +151,7 @@ TipoVar
 
 Declaraciones
     : TipoVar Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],$1)) } $$=arreglo }
-;
-
-Arreglos
-    : TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA { $$ = [new MatrizDec1($2, $1, $9, @1.first_line, @1.first_column)] } 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA { $$ = [new MatrizDec1($2, $1, $9, @1.first_line, @1.first_column)] } 
     | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new MatrizDec2($2, $1, $9, $11, $14, @1.first_line, @1.first_column)] }
     | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA { $$ = [new VectorDec1($2, $1, $7, @1.first_line, @1.first_column)] }
     | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new VectorDec2($2, $1, $7, $9, @1.first_line, @1.first_column)] }
@@ -168,9 +169,15 @@ ListaVectores
 ;
 
 Inicializacion
-    : IDENTIFICADOR ASIGNACION Valor PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor PTCOMA { $$ = [new InicializacionV($1, $3, $6, @1.first_line, @1.first_column)] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor PTCOMA { $$ = [new InicializacionM($1, $3, $6, $9, @1.first_line, @1.first_column)] }
+    : IDENTIFICADOR INCREMENTO { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR DECREMENTO { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR ASIGNACION Valor { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { $$ = [new InicializacionV($1, $3, $6, @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { $$ = [new InicializacionM($1, $3, $6, $9, @1.first_line, @1.first_column)] }
 ;
 
 Variables
@@ -216,29 +223,49 @@ Valor
     | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
     | TOSTRING PARABRE Valor PARCIERRE { $$ = new TOString($3, @1.first_line, @1.first_column) }
     | LENGTH PARABRE Valor PARCIERRE { $$ = new LENGHT($3, @1.first_line, @1.first_column) }
-    | LENGTH PARABRE CORCHETEABRE ListaValores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
-    | LENGTH PARABRE CORCHETEABRE ListaVectores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
+    //| LENGTH PARABRE CORCHETEABRE ListaValores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
+    //| LENGTH PARABRE CORCHETEABRE ListaVectores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
     | TOLOWER PARABRE Valor PARCIERRE { $$ = new TOLower($3, @1.first_line, @1.first_column) }
     | TOUPPER PARABRE Valor PARCIERRE { $$ = new TOUpper($3, @1.first_line, @1.first_column) }
     | TYPEOF PARABRE Valor PARCIERRE { $$ = new TypeOF($3, @1.first_line, @1.first_column) }
+    | ROUND PARABRE Valor PARCIERRE { $$ = new Redondear($3, @1.first_line, @1.first_column) }
 ;
 
 Print
     : PRINT PARABRE Valor PARCIERRE PTCOMA { $$ = [new Print(@1.first_line, @1.first_column,$3)] }
+    | PRINT PARABRE PARCIERRE PTCOMA { $$ = [new Print(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
+    | PRINTLN PARABRE Valor PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column,$3)] }
+    | PRINTLN PARABRE PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
 ;
 
-Println
-    : PRINTLN PARABRE Valor PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column,$3)] }
+If
+    : IF PARABRE Valor PARCIERRE Entorno Else { $$ = new If($3, new Entorno($5, @1.first_line, @1.first_column), $6, @1.first_line, @1.first_column)  }
 ;
 
-Incremento
-    : IDENTIFICADOR INCREMENTO PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column))] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO PTCOMA { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO PTCOMA { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+Else
+    : ELSE Entorno { $$ = new Entorno($2, @1.first_line, @1.first_column) } 
+    | ELSE If { $$ = $2 }
+    | { $$ = null }
 ;
 
-Decremento
-    : IDENTIFICADOR DECREMENTO PTCOMA { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column))] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO PTCOMA { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO PTCOMA { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+Ciclo
+    : FOR PARABRE Param1 Valor PTCOMA Inicializacion PARCIERRE Entorno { let a =[]; a.push(new Entorno($8, @1.first_line, @1.first_column)); $3.push(new EntornoC($4, a, $6[0], @1.first_line, @1.first_column)); $$ = [ new Ciclo(new Entorno($3, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | WHILE PARABRE Valor PARCIERRE Entorno { $$ = [new Ciclo(new EntornoC($3, $5, null, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | DO Entorno WHILE PARABRE Valor PARCIERRE PTCOMA { $$ = [new Ciclo(new EntornoD($5, $2, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+;
+
+Param1
+    : Declaraciones
+    | Inicializacion PTCOMA { $$ = $1 }
+;
+
+Entorno
+    : LLAVEABRE Instrucciones LLAVECIERRE { $$ = $2 }
+    | LLAVEABRE LLAVECIERRE { $$ = [] }
+;
+
+Break
+    : BREAK PTCOMA { $$ = [ new BREAK("Break", @1.first_line, @1.first_column) ] }
+    | CONTINUE PTCOMA { $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
+    | RETURN PTCOMA { $$ = [ new BREAK("Return", @1.first_line, @1.first_column) ] }
 ;

@@ -61,14 +61,9 @@ export class VectorDec2 extends Instruccion {
             if (dato.value <= 0) { throw new ErrorE(this.linea, this.columna, 'Semantico', 'El indice ingresado debe ser positivo'); }
 
             let vector = [];
-            let valorDefecto = null;
-            if (this.tipo == 0 || this.tipo == 1) { valorDefecto = 0 }
-            else if (this.tipo == 2) { valorDefecto = false }
-            else if (this.tipo == 3) { valorDefecto = '\u0000' }
-            else if (this.tipo == 4) { valorDefecto = null }
 
             for (let i = 0; i < dato.value; i++) {
-                vector.push(valorDefecto);
+                vector.push(null);
             }
             ambito.setValV(this.nombre, vector, this.tipo, this.linea, this.columna)
         }
@@ -147,16 +142,10 @@ export class MatrizDec2 extends Instruccion {
         if (tamanioFila.value <= 0) { throw new ErrorE(this.linea, this.columna, 'Semantico', 'El indice ingresado en Fila debe ser positivo'); }
         if (tamanioFila.value <= 0) { throw new ErrorE(this.linea, this.columna, 'Semantico', 'El indice ingresado en Columna debe ser positivo'); }
 
-        let valorDefecto = null;
-        if (this.tipo == 0 || this.tipo == 1) { valorDefecto = 0 }
-        else if (this.tipo == 2) { valorDefecto = false }
-        else if (this.tipo == 3) { valorDefecto = '\u0000' }
-        else if (this.tipo == 4) { valorDefecto = null }
-
         for (let i = 0; i < tamanioFila.value; i++) {
             let vector = []
             for (let i = 0; i < tamanioFila.value; i++) {
-                vector.push(valorDefecto);
+                vector.push(null);
             }
             matriz.push(vector)
         }
