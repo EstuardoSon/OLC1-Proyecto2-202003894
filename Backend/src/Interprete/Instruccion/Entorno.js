@@ -15,8 +15,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.EntornoD = exports.EntornoC = exports.EntornoI = exports.Entorno = void 0;
+exports.EntornoW = exports.EntornoCase = exports.EntornoD = exports.EntornoC = exports.EntornoI = exports.Entorno = void 0;
 var Error_1 = require("../Error/Error");
+var Relacional_1 = require("../Expresion/Relacional");
 var Ambito_1 = require("../Extra/Ambito");
 var Instruccion_1 = require("./Instruccion");
 var parser = require('../Grammar/grammar');
@@ -154,3 +155,74 @@ var EntornoD = /** @class */ (function (_super) {
     return EntornoD;
 }(Instruccion_1.Instruccion));
 exports.EntornoD = EntornoD;
+var EntornoCase = /** @class */ (function (_super) {
+    __extends(EntornoCase, _super);
+    function EntornoCase(valor, instruccines, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        _this.instruccines = instruccines;
+        return _this;
+    }
+    EntornoCase.prototype.ejecutar = function (ambito) {
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Case");
+        for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
+            var i = _a[_i];
+            try {
+                var respuesta = i.ejecutar(nuevoAmbito);
+                if (respuesta != null) {
+                    if (respuesta.type == 'Break' || respuesta.type == 'Return') {
+                        return respuesta;
+                    }
+                    else if (respuesta.type == 'Continue') {
+                        return respuesta;
+                    }
+                }
+            }
+            catch (error) {
+                parser.Errores.push(error);
+            }
+        }
+    };
+    return EntornoCase;
+}(Instruccion_1.Instruccion));
+exports.EntornoCase = EntornoCase;
+var EntornoW = /** @class */ (function (_super) {
+    __extends(EntornoW, _super);
+    function EntornoW(valor, instruccines, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        _this.instruccines = instruccines;
+        return _this;
+    }
+    EntornoW.prototype.ejecutar = function (ambito) {
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Switch");
+        for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
+            var i = _a[_i];
+            try {
+                var comparacion = void 0;
+                if (i.valor != null) {
+                    comparacion = new Relacional_1.Relacional(i.valor, this.valor, 0, this.linea, this.columna);
+                }
+                else {
+                    comparacion = new Relacional_1.Relacional(this.valor, this.valor, 0, this.linea, this.columna);
+                }
+                if (comparacion) {
+                    var respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break') {
+                            break;
+                        }
+                        else if (respuesta.type == 'Continue' || respuesta.type == 'Return') {
+                            return respuesta;
+                        }
+                    }
+                }
+            }
+            catch (error) {
+                parser.Errores.push(error);
+            }
+        }
+    };
+    return EntornoW;
+}(Instruccion_1.Instruccion));
+exports.EntornoW = EntornoW;

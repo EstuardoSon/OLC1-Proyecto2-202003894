@@ -15,7 +15,7 @@ var Arbol = /** @class */ (function () {
             for (var _i = 0, _a = raiz.hijos; _i < _a.length; _i++) {
                 var hijo = _a[_i];
                 if (hijo != null) {
-                    this.enlaces += "n".concat(raiz.numero, " -> n").concat(hijo.numero, " ;");
+                    this.enlaces += "n".concat(raiz.numero, " -> n").concat(hijo.numero, "; ");
                     this.generarEnlaces(hijo);
                 }
             }
@@ -357,6 +357,47 @@ var Arbol = /** @class */ (function () {
     };
     Arbol.prototype.generarParam1 = function () {
         var hijos = [this.pila.pop(), this.generarHijo(";")];
+        var instruccion = this.generarPrduccion("Param1");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarCasos = function () {
+        var dato2 = this.pila.pop();
+        var hijos = [this.generarHijo("Case"), this.pila.pop(), this.generarHijo(":"), dato2];
+        var instruccion = this.generarPrduccion("Casos");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarCasos2 = function () {
+        var dato3 = this.pila.pop();
+        var dato2 = this.pila.pop();
+        var hijos = [this.pila.pop(), this.generarHijo("Case"), dato2, this.generarHijo(":"), dato3];
+        var instruccion = this.generarPrduccion("Casos");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarEntornoS = function () {
+        var dato2 = this.pila.pop();
+        var hijos = [this.pila.pop(), this.generarHijo("Default"), this.generarHijo(":"), dato2];
+        var instruccion = this.generarPrduccion("EntornoS");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarEntornoS2 = function () {
+        var hijos = [this.pila.pop()];
+        var instruccion = this.generarPrduccion("EntornoS");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarEntornoS3 = function () {
+        var hijos = [this.generarHijo("Default"), this.generarHijo(":"), this.pila.pop()];
+        var instruccion = this.generarPrduccion("Param1");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarSwitch = function () {
+        var dato2 = this.pila.pop();
+        var hijos = [this.generarHijo("Switch"), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), this.generarHijo("{"), dato2, this.generarHijo("}")];
         var instruccion = this.generarPrduccion("Param1");
         instruccion.insertarHijos(hijos);
         this.pila.push(instruccion);

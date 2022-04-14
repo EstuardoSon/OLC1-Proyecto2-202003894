@@ -11,8 +11,9 @@
     const {If} = require('../Instruccion/If')
     const {Ciclo} = require('../Instruccion/Ciclo')
     const {BREAK} = require('../Instruccion/BreakContinue')
-    const {Entorno,EntornoI, EntornoC, EntornoD} = require('../Instruccion/Entorno')
+    const {Entorno,EntornoI, EntornoC, EntornoD, EntornoCase, EntornoW} = require('../Instruccion/Entorno')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
+    const {Switch} = require('../Instruccion/Switch')
     const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
     const {Arbol} = require('../Extra/Arbol')
@@ -269,18 +270,18 @@ Param1
 ;
 
 Switch
-    : SWITCH PARABRE Valor PARCIERRE LLAVEABRE EntornoS LLAVECIERRE
+    : SWITCH PARABRE Valor PARCIERRE LLAVEABRE EntornoS LLAVECIERRE { arbol.generarSwitch(); $$ = [new Switch(new EntornoW($3, $6, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
 ;
 
 EntornoS
-    : Casos DEFAULT DOSPT Entorno
-    | Casos
-    | DEFAULT DOSPT Entorno
+    : Casos DEFAULT DOSPT Entorno { arbol.generarEntornoS(); $1.push(new EntornoCase(null, $4, @1.first_line, @1.first_column)); $$ = $1 }
+    | Casos { arbol.generarEntornoS2(); $$ = $1 }
+    | DEFAULT DOSPT Entorno { arbol.generarEntornoS3(); $$ = [new EntornoCase(null, $3, @1.first_line, @1.first_column)] }
 ;
 
 Casos
-    : CASE Valor DOSPT Entorno
-    | Casos CASE Valor DOSPT Entorno
+    : CASE Valor DOSPT Entorno { arbol.generarCasos(); $$ = [new EntornoCase($2, $4, @1.first_line, @1.first_column)] }
+    | Casos CASE Valor DOSPT Entorno { arbol.generarCasos2(); $1.push(new EntornoCase($3, $5, @1.first_line, @1.first_column)); $$=$1}
 ;
 
 Entorno
@@ -291,5 +292,6 @@ Entorno
 Break
     : BREAK PTCOMA { arbol.generarBreak("Break"); $$ = [ new BREAK("Break", @1.first_line, @1.first_column) ] }
     | CONTINUE PTCOMA { arbol.generarBreak("Continue"); $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
-    | RETURN PTCOMA { arbol.generarBreak("Return"); $$ = [ new BREAK("Return", @1.first_line, @1.first_column) ] }
+    | RETURN PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN(null, @1.first_line, @1.first_column) ] }
+    | RETURN Valor PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN($2, @1.first_line, @1.first_column) ] }
 ;

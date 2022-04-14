@@ -13,7 +13,7 @@ export class Arbol {
         if (raiz.hijos != null) {
             for (let hijo of raiz.hijos) {
                 if (hijo != null) {
-                    this.enlaces += `n${raiz.numero} -> n${hijo.numero} ;`
+                    this.enlaces += `n${raiz.numero} -> n${hijo.numero}; `
                     this.generarEnlaces(hijo);
                 }
             }
@@ -408,6 +408,53 @@ export class Arbol {
 
     public generarParam1() {
         const hijos = [this.pila.pop(), this.generarHijo(";")]
+        const instruccion = this.generarPrduccion("Param1");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarCasos() {
+        const dato2 = this.pila.pop()
+        const hijos = [this.generarHijo("Case"),this.pila.pop(), this.generarHijo(":"),dato2]
+        const instruccion = this.generarPrduccion("Casos");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarCasos2() {
+        const dato3 = this.pila.pop()
+        const dato2 = this.pila.pop()
+        const hijos = [this.pila.pop(), this.generarHijo("Case"),dato2, this.generarHijo(":"),dato3]
+        const instruccion = this.generarPrduccion("Casos");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarEntornoS() {
+        const dato2 = this.pila.pop()
+        const hijos = [this.pila.pop(), this.generarHijo("Default"), this.generarHijo(":"),dato2]
+        const instruccion = this.generarPrduccion("EntornoS");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarEntornoS2() {
+        const hijos = [this.pila.pop()]
+        const instruccion = this.generarPrduccion("EntornoS");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarEntornoS3() {
+        const hijos = [this.generarHijo("Default"), this.generarHijo(":"),this.pila.pop()]
+        const instruccion = this.generarPrduccion("Param1");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarSwitch() {
+        const dato2 = this.pila.pop()
+        const hijos = [this.generarHijo("Switch"), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), this.generarHijo("{"),dato2, this.generarHijo("}")]
         const instruccion = this.generarPrduccion("Param1");
         instruccion.insertarHijos(hijos);
         this.pila.push(instruccion);

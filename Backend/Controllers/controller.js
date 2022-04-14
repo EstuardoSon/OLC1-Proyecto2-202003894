@@ -3,7 +3,7 @@ var parser = require('../src/Interprete/Grammar/grammar');
 var tabla = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Linea</th><th>Columna</th><th>Tipo</th><th>Mensaje</th></tr></thead></table>";
 var tablaS = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Entorno</th><th>Nombre</th><th>Valor</th><th>Tipo Dato</th><th>Tipo Variable</th></tr></thead></table>";
 var ContenidoEditor = { Codigo: "", Error: "" }
-var Dot = "<p></p>";
+var Dot = "digraph G{}";
 
 exports.index = async (req, res) => {
     res.send({ "Controlador": "Estuardo" })

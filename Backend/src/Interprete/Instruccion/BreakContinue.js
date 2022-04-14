@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.BREAK = void 0;
+exports.RETURN = exports.BREAK = void 0;
 var Instruccion_1 = require("./Instruccion");
 var BREAK = /** @class */ (function (_super) {
     __extends(BREAK, _super);
@@ -30,3 +30,20 @@ var BREAK = /** @class */ (function (_super) {
     return BREAK;
 }(Instruccion_1.Instruccion));
 exports.BREAK = BREAK;
+var RETURN = /** @class */ (function (_super) {
+    __extends(RETURN, _super);
+    function RETURN(valor, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.valor = valor;
+        return _this;
+    }
+    RETURN.prototype.ejecutar = function (ambito) {
+        if (this.valor != null) {
+            var verValor = this.valor.ejecutar(ambito);
+            return { type: "Return", value: verValor, line: this.linea, column: this.columna };
+        }
+        return { type: "Return", value: null, line: this.linea, column: this.columna };
+    };
+    return RETURN;
+}(Instruccion_1.Instruccion));
+exports.RETURN = RETURN;
