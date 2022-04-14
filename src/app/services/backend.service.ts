@@ -21,4 +21,12 @@ export class BackendService {
   reporteError(){
     return this.http.get(`${this.URL}/Error`)
   }
+
+  reporteAST(){
+    return this.http.get(`${this.URL}/AST`)
+  }
+
+  reporteSimbolos(){
+    return this.http.get(`${this.URL}/Simbolos`)
+  }
 }

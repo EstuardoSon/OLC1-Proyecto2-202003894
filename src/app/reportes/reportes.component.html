@@ -1,9 +1,7 @@
 <div class="d-grid gap-3" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 20px; margin-bottom: 20px;">
     <button class="btn btn-secondary" (click)="verErrores()">Errores</button>
-    <button class="btn btn-secondary">Tabla de Simbolos</button>
+    <button class="btn btn-secondary" (click)="verSimbolos()">Tabla de Simbolos</button>
     <button class="btn btn-secondary" (click)="verAST()">AST</button>
 </div>
 
-<div id="graph" [innerHTML]="contenidoDiv" style="width: auto; height: 400px; border: 1px solid #ddd; background: #f1f1f1; overflow-y: scroll;"></div>
-
-
+<div id="graph" [innerHTML]="contenidoDiv" style="text-align: center; width: auto; height: 400px; border: 1px solid #ddd; background: #f1f1f1; overflow-y: scroll;"></div>

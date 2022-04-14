@@ -10,7 +10,29 @@ export class Entorno extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito);
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre+" - Pfor");
+
+        for (let i of this.instruccines) {
+            try {
+                let respuesta = i.ejecutar(nuevoAmbito);
+                if (respuesta != null){ 
+                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return'){ return respuesta }
+                }
+            } catch (error) {
+                parser.Errores.push(error)
+            }
+        }
+    }
+
+}
+
+export class EntornoI extends Instruccion {
+    constructor(private instruccines: Array<Instruccion>, linea: number, columna: number) {
+        super(linea, columna);
+    }
+
+    public ejecutar(ambito: Ambito) {
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre+" - If");
 
         for (let i of this.instruccines) {
             try {
@@ -36,7 +58,7 @@ export class EntornoC extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito);
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre+" - Ciclo");
 
         while (ejeCondicion.value) {
             for (let i of this.instruccines) {
@@ -67,7 +89,7 @@ export class EntornoD extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito);
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre+" - Ciclo");
 
         do {
             for (let i of this.instruccines) {

@@ -10,4 +10,8 @@ router.get("/Codigo", control.CodigoIngresado)
 
 router.get("/Error", control.ReporteErrores)
 
+router.get("/AST", control.ReporteAST)
+
+router.get("/Simbolos", control.ReporteSimbolos)
+
 module.exports = router

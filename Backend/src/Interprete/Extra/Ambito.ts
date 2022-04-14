@@ -1,11 +1,12 @@
 import { ErrorE } from "../Error/Error";
 import { Type } from "../Expresion/Retorno";
 import { Simbolo } from "./Simbolo";
+var parser = require('../Grammar/grammar');
 
 export class Ambito {
     public variables: Map<string, Simbolo>;
 
-    constructor(public anterior: Ambito | null) {
+    constructor(public anterior: Ambito | null, public nombre:string) {
         this.variables = new Map()
     }
 
@@ -16,6 +17,11 @@ export class Ambito {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
                 const val = entorno.variables.get(id)
                 if (val.tipo == tipo) {
+                    parser.TablaSimbolos.find(object =>{
+                        if(object[1]==id.toLocaleLowerCase()){
+                            object[2]=valor;
+                        }
+                    });
                     entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 0))
                 } else {
                     throw new ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + valor + ' a ' + id + " porque no son del mismo tipo");
@@ -34,6 +40,7 @@ export class Ambito {
             }
             entorno = entorno.anterior
         }
+        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Primitiva"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 0))
     }
 
@@ -58,6 +65,7 @@ export class Ambito {
             }
             entorno = entorno.anterior
         }
+        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Matriz"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 2))
     }
 
@@ -66,6 +74,11 @@ export class Ambito {
 
         while (entorno != null) {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
+                parser.TablaSimbolos.find(object =>{
+                    if(object[1]==id.toLocaleLowerCase()){
+                        object[2]=valor;
+                    }
+                });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 2))
             }
             entorno = entorno.anterior
@@ -81,6 +94,7 @@ export class Ambito {
             }
             entorno = entorno.anterior
         }
+        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Vector"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 1))
     }
 
@@ -89,6 +103,11 @@ export class Ambito {
 
         while (entorno != null) {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
+                parser.TablaSimbolos.find(object =>{
+                    if(object[1]==id.toLocaleLowerCase()){
+                        object[2]=valor;
+                    }
+                });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 1))
             }
             entorno = entorno.anterior

@@ -41,6 +41,6 @@ export class Inicializacion extends Instruccion {
 
     public ejecutar(ambito: Ambito) {
         let value = this.valor.ejecutar(ambito);
-        ambito.modVal(this.nombre, value.value, value.type, this.linea, this.columna)
+        ambito.modVal(String(this.nombre).toLowerCase(), value.value, value.type, this.linea, this.columna)
     }
 }

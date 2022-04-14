@@ -15,7 +15,7 @@ export class Relacional extends Expresion {
         
         if (typeof(valorIzquierda.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valorIzquierda.value} no es un dato primitivo`) }
         if (typeof(valorDerecha.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que ${valorDerecha.value} no es un dato primitivo`) }
-
+        
         var dominante = this.tipoDominante(6, valorIzquierda.type, valorDerecha.type);
 
         if (dominante != null) {
@@ -63,7 +63,7 @@ export class Relacional extends Expresion {
                 return { value: result, type: dominante }
             }
         }
-        return { value: null, type: null }
+        throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible realizar la operacion relacional entre {${valorIzquierda.value}} {${valorDerecha.value}}`)
     }
 }
 

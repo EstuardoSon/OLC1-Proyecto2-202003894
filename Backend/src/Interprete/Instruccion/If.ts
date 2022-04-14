@@ -1,4 +1,3 @@
-import { Validators } from "@angular/forms";
 import { ErrorE } from "../Error/Error";
 import { Expresion } from "../Expresion/Expresion";
 import { Ambito } from "../Extra/Ambito";

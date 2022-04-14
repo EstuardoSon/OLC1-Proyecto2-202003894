@@ -106,7 +106,7 @@ var Relacional = /** @class */ (function (_super) {
                 return { value: result, type: dominante };
             }
         }
-        return { value: null, type: null };
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible realizar la operacion relacional entre {".concat(valorIzquierda.value, "} {").concat(valorDerecha.value, "}"));
     };
     return Relacional;
 }(Expresion_1.Expresion));

@@ -15,7 +15,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.EntornoD = exports.EntornoC = exports.Entorno = void 0;
+exports.EntornoD = exports.EntornoC = exports.EntornoI = exports.Entorno = void 0;
 var Error_1 = require("../Error/Error");
 var Ambito_1 = require("../Extra/Ambito");
 var Instruccion_1 = require("./Instruccion");
@@ -28,7 +28,7 @@ var Entorno = /** @class */ (function (_super) {
         return _this;
     }
     Entorno.prototype.ejecutar = function (ambito) {
-        var nuevoAmbito = new Ambito_1.Ambito(ambito);
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Pfor");
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
@@ -47,6 +47,33 @@ var Entorno = /** @class */ (function (_super) {
     return Entorno;
 }(Instruccion_1.Instruccion));
 exports.Entorno = Entorno;
+var EntornoI = /** @class */ (function (_super) {
+    __extends(EntornoI, _super);
+    function EntornoI(instruccines, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.instruccines = instruccines;
+        return _this;
+    }
+    EntornoI.prototype.ejecutar = function (ambito) {
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - If");
+        for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
+            var i = _a[_i];
+            try {
+                var respuesta = i.ejecutar(nuevoAmbito);
+                if (respuesta != null) {
+                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') {
+                        return respuesta;
+                    }
+                }
+            }
+            catch (error) {
+                parser.Errores.push(error);
+            }
+        }
+    };
+    return EntornoI;
+}(Instruccion_1.Instruccion));
+exports.EntornoI = EntornoI;
 var EntornoC = /** @class */ (function (_super) {
     __extends(EntornoC, _super);
     function EntornoC(condicion, instruccines, final, linea, columna) {
@@ -61,7 +88,7 @@ var EntornoC = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito);
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo");
         while (ejeCondicion.value) {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
@@ -102,7 +129,7 @@ var EntornoD = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito);
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo");
         do {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];

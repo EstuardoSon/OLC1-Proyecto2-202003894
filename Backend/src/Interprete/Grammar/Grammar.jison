@@ -11,14 +11,20 @@
     const {If} = require('../Instruccion/If')
     const {Ciclo} = require('../Instruccion/Ciclo')
     const {BREAK} = require('../Instruccion/BreakContinue')
-    const {Entorno, EntornoC, EntornoD} = require('../Instruccion/Entorno')
+    const {Entorno,EntornoI, EntornoC, EntornoD} = require('../Instruccion/Entorno')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
     const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
+    const {Arbol} = require('../Extra/Arbol')
     Errores = []
     exports.Errores = Errores
     Impresion = ""
     exports.Impresion = Impresion
+    arbol = new Arbol();
+    exports.arbol = arbol
+
+    TablaSimbolos =[]
+    exports.TablaSimbolos = TablaSimbolos
 %}
     
 
@@ -46,6 +52,7 @@
 "false" return 'FALSE';
 "break" return 'BREAK';
 "continue" return 'CONTINUE';
+"default" return 'DEFAULT';
 "return" return 'RETURN';
 "do" return 'DO';
 "while" return 'WHILE';
@@ -114,7 +121,7 @@
 %left 'DIVISION' 'MULTIPLICACION' 'MODULO'
 %nonassoc 'POTENCIA'
 %nonassoc 'DECREMENTO' 'INCREMENTO'
-%right CAST1 CAST2 CAST3 CAST4
+%right CAST1
 %right UMINUS
 %start ini
 
@@ -122,150 +129,167 @@
 
 ini
     :Instrucciones EOF{
+        arbol.generarIni();
         return $1;
     }
 ;
 
 Instrucciones
-    : TipoInstruccion { $$=$1 }
-    | Instrucciones TipoInstruccion { for(let instruccion of $2){ $1.push(instruccion) } $$=$1  }
+    : TipoInstruccion { arbol.generarInstrucciones(); $$=$1 }
+    | Instrucciones TipoInstruccion { arbol.generarInstrucciones2(); for(let instruccion of $2){ $1.push(instruccion) } $$=$1  }
 ;
 
 TipoInstruccion
-    : Declaraciones 
-    | Inicializacion PTCOMA { $$ = $1 }
-    | Print
-    | If { $$ = [$1] }
-    | Ciclo
-    | Break
-    | error { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado: "+this.$ )); $$=[] }
+    : Declaraciones { arbol.generarTipoInstruccion(); }
+    | Inicializacion PTCOMA { arbol.generarTipoInstruccion2();  $$ = $1 }
+    | Print { arbol.generarTipoInstruccion(); }
+    | If { arbol.generarTipoInstruccion(); $$ = [$1] }
+    | Ciclo { arbol.generarTipoInstruccion(); }
+    | Break { arbol.generarTipoInstruccion(); }
+    | Switch { arbol.generarTipoInstruccion(); }
+    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado Recouperado con: ;"  )); $$=[] }
 ;
 
 TipoVar
-    : INT { $$ = 0 }
-    | DOUBLE { $$ = 1 }
-    | BOOLEAN { $$ = 2 }
-    | CHAR { $$ = 3 }
-    | STRING { $$ = 4 }
+    : INT { arbol.generarTipoVar("Int"); $$ = 0 }
+    | DOUBLE { arbol.generarTipoVar("Double"); $$ = 1 }
+    | BOOLEAN { arbol.generarTipoVar("Boolean"); $$ = 2 }
+    | CHAR { arbol.generarTipoVar("Char"); $$ = 3 }
+    | STRING { arbol.generarTipoVar("String"); $$ = 4 }
 ;
 
 Declaraciones
-    : TipoVar Variables { var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],$1)) } $$=arreglo }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA { $$ = [new MatrizDec1($2, $1, $9, @1.first_line, @1.first_column)] } 
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new MatrizDec2($2, $1, $9, $11, $14, @1.first_line, @1.first_column)] }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA { $$ = [new VectorDec1($2, $1, $7, @1.first_line, @1.first_column)] }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA { $$ = [new VectorDec2($2, $1, $7, $9, @1.first_line, @1.first_column)] }
-    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION TOCHARARRAY PARABRE Valor PARCIERRE PTCOMA { $$ = [new VectorDec3($2,$1, $8, @1.first_line, @1.first_column)] }
+    : TipoVar Variables { arbol.generarDeclaraciones(); var arreglo= []; for(let variable of $2){ arreglo.push(new Declaracion(variable[0],variable[1],variable[2],variable[3],$1)) } $$=arreglo }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA { arbol.generarDeclaraciones1($2); $$ = [new MatrizDec1($2, $1, $9, @1.first_line, @1.first_column)] } 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA { arbol.generarDeclaraciones2($2); $$ = [new MatrizDec2($2, $1, $9, $11, $14, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA { arbol.generarDeclaraciones3($2); $$ = [new VectorDec1($2, $1, $7, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA { arbol.generarDeclaraciones4($2); $$ = [new VectorDec2($2, $1, $7, $9, @1.first_line, @1.first_column)] }
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION TOCHARARRAY PARABRE Valor PARCIERRE PTCOMA { arbol.generarDeclaraciones5($2); $$ = [new VectorDec3($2,$1, $8, @1.first_line, @1.first_column)] }
 ;
 
 ListaValores
-    : ListaValores COMA Valor { $1.push($3); $$ = $1 }
-    | Valor { $$ = [$1] }
+    : ListaValores COMA Valor { arbol.generarListaValores2(); $1.push($3); $$ = $1 }
+    | Valor { arbol.generarListaValores(); $$ = [$1] }
 ;
 
 ListaVectores
-    : ListaVectores COMA CORCHETEABRE ListaValores CORCHETECIERRE { $1.push($4); $$ = $1 }
-    | CORCHETEABRE ListaValores CORCHETECIERRE { $$ = [$2] }
+    : ListaVectores COMA CORCHETEABRE ListaValores CORCHETECIERRE { arbol.generarListaVectores2(); $1.push($4); $$ = $1 }
+    | CORCHETEABRE ListaValores CORCHETECIERRE { arbol.generarListaVectores(); $$ = [$2] }
 ;
 
 Inicializacion
-    : IDENTIFICADOR INCREMENTO { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column))] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
-    | IDENTIFICADOR DECREMENTO { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column))] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
-    | IDENTIFICADOR ASIGNACION Valor { $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { $$ = [new InicializacionV($1, $3, $6, @1.first_line, @1.first_column)] }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { $$ = [new InicializacionM($1, $3, $6, $9, @1.first_line, @1.first_column)] }
+    : IDENTIFICADOR INCREMENTO { arbol.generarInicializacion($1,$2); $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { arbol.generarInicializacion2($1,$5); $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  { arbol.generarInicializacion3($1,$8); $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR DECREMENTO { arbol.generarInicializacion($1,$2); $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, new Aritmetica( new Llamado($1, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column))] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { arbol.generarInicializacion2($1,$5); $$ = [new InicializacionV($1, $3, new Aritmetica( new LlamadoV($1, $3, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)]}
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO { arbol.generarInicializacion($1,$8); $$ = [new InicializacionM($1, $3, $6, new Aritmetica( $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column), new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR ASIGNACION Valor { arbol.generarInicializacion4($1); $$ = [new Inicializacion(@1.first_line, @1.first_column, $1, $3)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { arbol.generarInicializacion5($1); $$ = [new InicializacionV($1, $3, $6, @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor { arbol.generarInicializacion6($1); $$ = [new InicializacionM($1, $3, $6, $9, @1.first_line, @1.first_column)] }
 ;
 
 Variables
-    : Variables2 ASIGNACION Valor PTCOMA { for( i in $1 ){ $1[i][3] = $3 } $$ = $1 }
-    | Variables2 PTCOMA { $$ = $1 }
+    : Variables2 ASIGNACION Valor PTCOMA { arbol.generarVariables(); for( i in $1 ){ $1[i][3] = $3 } $$ = $1 }
+    | Variables2 PTCOMA { arbol.generarVariables_1(); $$ = $1 }
 ;
 
 Variables2
-    : Variables2 COMA IDENTIFICADOR { $1.push([@1.first_line, @1.first_column, $3, null]); $$ = $1  }
-    | IDENTIFICADOR { $$ =[ [@1.first_line, @1.first_column, $1, null] ] }
+    : Variables2 COMA IDENTIFICADOR { arbol.generarVariables2_1($3); $1.push([@1.first_line, @1.first_column, $3, null]); $$ = $1  }
+    | IDENTIFICADOR { arbol.generarVariables2_($1); $$ =[ [@1.first_line, @1.first_column, $1, null] ] }
 ;
 
 Valor
-    : RESTA Valor %prec UMINUS { $$ = new Aritmetica($2,new Literal(-1, 0, @1.first_line, @1.first_column),2, @1.first_line, @1.first_column)}
-    | Valor POTENCIA Valor { $$ = new Aritmetica($1,$3,4, @1.first_line, @1.first_column) }
-    | Valor MULTIPLICACION Valor { $$ = new Aritmetica($1,$3,2, @1.first_line, @1.first_column) }
-    | Valor DIVISION Valor { $$ = new Aritmetica($1,$3,3, @1.first_line, @1.first_column) }
-    | Valor SUMA Valor { $$ = new Aritmetica($1,$3,0, @1.first_line, @1.first_column) }
-    | Valor RESTA Valor { $$ = new Aritmetica($1,$3,1, @1.first_line, @1.first_column) }
-    | Valor MODULO Valor { $$ = new Aritmetica($1,$3,5, @1.first_line, @1.first_column) }
-    | Valor IGUAL Valor { $$ = new Relacional($1,$3,0, @1.first_line, @1.first_column) }
-    | Valor DIFERENTE Valor { $$ = new Relacional($1,$3,1, @1.first_line, @1.first_column) }
-    | Valor MENOR Valor { $$ = new Relacional($1,$3,4, @1.first_line, @1.first_column) }
-    | Valor MENORIGUAL Valor {$$ = new Relacional($1,$3,5, @1.first_line, @1.first_column)}
-    | Valor MAYOR Valor { $$ = new Relacional($1,$3,2, @1.first_line, @1.first_column) }
-    | Valor MAYORIGUAL Valor { $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
-    | Valor OR Valor { $$ = new Relacional($1,$3,7, @1.first_line, @1.first_column) }
-    | Valor AND Valor { $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
-    | Valor INCREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column) }
-    | Valor DECREMENTO { $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column) }
-    | Valor TERNARIO Valor DOSPT Valor { $$ = new Ternario($1, $3, $5, @1.first_line, @1.first_column) } 
-    | NEGACION Valor { $$ = new Negacion($2,2, @1.first_line, @1.first_column) }
-    | PARABRE Valor PARCIERRE { $$ = $2 }
-    | ENTERO {$$ = new Literal($1,0, @1.first_line, @1.first_column) }
-    | DECIMAL { $$ = new Literal($1,1, @1.first_line, @1.first_column) }
-    | CADENA { $$ = new Literal($1, 4, @1.first_line, @1.first_column) }
-    | CARACTER { $$ = new Literal($1, 3, @1.first_line, @1.first_column) }
-    | TRUE { $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
-    | FALSE { $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
-    | IDENTIFICADOR { $$ = new Llamado($1, @1.first_line, @1.first_column) }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE { $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column) }
-    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE { $$ = new LlamadoV($1, $3, @1.first_line, @1.first_column) }
-    | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
-    | TOSTRING PARABRE Valor PARCIERRE { $$ = new TOString($3, @1.first_line, @1.first_column) }
-    | LENGTH PARABRE Valor PARCIERRE { $$ = new LENGHT($3, @1.first_line, @1.first_column) }
+    : RESTA Valor %prec UMINUS { arbol.generarValorOperacionU("-");  $$ = new Aritmetica($2,new Literal(-1, 0, @1.first_line, @1.first_column),2, @1.first_line, @1.first_column)}
+    | Valor POTENCIA Valor { arbol.generarValorOperacion("^"); $$ = new Aritmetica($1,$3,4, @1.first_line, @1.first_column) }
+    | Valor MULTIPLICACION Valor { arbol.generarValorOperacion("*"); $$ = new Aritmetica($1,$3,2, @1.first_line, @1.first_column) }
+    | Valor DIVISION Valor { arbol.generarValorOperacion("/"); $$ = new Aritmetica($1,$3,3, @1.first_line, @1.first_column) }
+    | Valor SUMA Valor { arbol.generarValorOperacion("+"); $$ = new Aritmetica($1,$3,0, @1.first_line, @1.first_column) }
+    | Valor RESTA Valor { arbol.generarValorOperacion("-"); $$ = new Aritmetica($1,$3,1, @1.first_line, @1.first_column) }
+    | Valor MODULO Valor { arbol.generarValorOperacion("%"); $$ = new Aritmetica($1,$3,5, @1.first_line, @1.first_column) }
+    | Valor IGUAL Valor { arbol.generarValorOperacion("=="); $$ = new Relacional($1,$3,0, @1.first_line, @1.first_column) }
+    | Valor DIFERENTE Valor { arbol.generarValorOperacion("!="); $$ = new Relacional($1,$3,1, @1.first_line, @1.first_column) }
+    | Valor MENOR Valor { arbol.generarValorOperacion("<"); $$ = new Relacional($1,$3,4, @1.first_line, @1.first_column) }
+    | Valor MENORIGUAL Valor { arbol.generarValorOperacion("<="); $$ = new Relacional($1,$3,5, @1.first_line, @1.first_column)}
+    | Valor MAYOR Valor { arbol.generarValorOperacion(">"); $$ = new Relacional($1,$3,2, @1.first_line, @1.first_column) }
+    | Valor MAYORIGUAL Valor { arbol.generarValorOperacion(">="); $$ = new Relacional($1,$3,3, @1.first_line, @1.first_column) }
+    | Valor OR Valor { arbol.generarValorOperacion("||"); $$ = new Relacional($1,$3,7, @1.first_line, @1.first_column) }
+    | Valor AND Valor { arbol.generarValorOperacion("&&"); $$ = new Relacional($1,$3,6, @1.first_line, @1.first_column) }
+    | Valor INCREMENTO { arbol.generarINCDEC("++"); $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),7, @1.first_line, @1.first_column) }
+    | Valor DECREMENTO { arbol.generarINCDEC("--"); $$ = new Aritmetica($1,new Literal(1, 0, @1.first_line, @1.first_column),8, @1.first_line, @1.first_column) }
+    | Valor TERNARIO Valor DOSPT Valor { arbol.generarValorT(); $$ = new Ternario($1, $3, $5, @1.first_line, @1.first_column) } 
+    | NEGACION Valor { arbol.generarValorOperacionU("!"); $$ = new Negacion($2,2, @1.first_line, @1.first_column) }
+    | PARABRE Valor PARCIERRE { arbol.generarValorPar(); $$ = $2 }
+    | ENTERO { arbol.generarValor($1); $$ = new Literal($1,0, @1.first_line, @1.first_column) }
+    | DECIMAL { arbol.generarValor($1); $$ = new Literal($1,1, @1.first_line, @1.first_column) }
+    | CADENA { arbol.generarValor($1); $$ = new Literal($1, 4, @1.first_line, @1.first_column) }
+    | CARACTER { arbol.generarValor($1); $$ = new Literal($1, 3, @1.first_line, @1.first_column) }
+    | TRUE { arbol.generarValor($1); $$ = new Literal(true, 2, @1.first_line, @1.first_column) }
+    | FALSE { arbol.generarValor($1); $$ = new Literal(false, 2, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR { arbol.generarValorA($1); $$ = new Llamado($1, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE { arbol.generarValorAM($1); $$ = new LlamadoM($1, $3, $6, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE { arbol.generarValorAV($1); $$ = new LlamadoV($1, $3, @1.first_line, @1.first_column) }
+    | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { arbol.generarValorCasteo(); $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
+    | TOSTRING PARABRE Valor PARCIERRE { arbol.generarValorFuncion("ToString"); $$ = new TOString($3, @1.first_line, @1.first_column) }
+    | LENGTH PARABRE Valor PARCIERRE { arbol.generarValorFuncion("length"); $$ = new LENGHT($3, @1.first_line, @1.first_column) }
     //| LENGTH PARABRE CORCHETEABRE ListaValores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
     //| LENGTH PARABRE CORCHETEABRE ListaVectores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
-    | TOLOWER PARABRE Valor PARCIERRE { $$ = new TOLower($3, @1.first_line, @1.first_column) }
-    | TOUPPER PARABRE Valor PARCIERRE { $$ = new TOUpper($3, @1.first_line, @1.first_column) }
-    | TYPEOF PARABRE Valor PARCIERRE { $$ = new TypeOF($3, @1.first_line, @1.first_column) }
-    | ROUND PARABRE Valor PARCIERRE { $$ = new Redondear($3, @1.first_line, @1.first_column) }
+    | TOLOWER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toLower");  $$ = new TOLower($3, @1.first_line, @1.first_column) }
+    | TOUPPER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toUpper"); $$ = new TOUpper($3, @1.first_line, @1.first_column) }
+    | TYPEOF PARABRE Valor PARCIERRE { arbol.generarValorFuncion("typeOf"); $$ = new TypeOF($3, @1.first_line, @1.first_column) }
+    | ROUND PARABRE Valor PARCIERRE { arbol.generarValorFuncion("round"); $$ = new Redondear($3, @1.first_line, @1.first_column) }
 ;
 
 Print
-    : PRINT PARABRE Valor PARCIERRE PTCOMA { $$ = [new Print(@1.first_line, @1.first_column,$3)] }
-    | PRINT PARABRE PARCIERRE PTCOMA { $$ = [new Print(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
-    | PRINTLN PARABRE Valor PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column,$3)] }
-    | PRINTLN PARABRE PARCIERRE PTCOMA { $$ = [new Println(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
+    : PRINT PARABRE Valor PARCIERRE PTCOMA { arbol.generarPrint("Print"); $$ = [new Print(@1.first_line, @1.first_column,$3)] }
+    | PRINT PARABRE PARCIERRE PTCOMA { arbol.generarPrint2("Print"); $$ = [new Print(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
+    | PRINTLN PARABRE Valor PARCIERRE PTCOMA { arbol.generarPrint("Println"); $$ = [new Println(@1.first_line, @1.first_column,$3)] }
+    | PRINTLN PARABRE PARCIERRE PTCOMA { arbol.generarPrint2("Println"); $$ = [new Println(@1.first_line, @1.first_column, new Literal("", 4, @1.first_line, @1.first_column))] }
 ;
 
 If
-    : IF PARABRE Valor PARCIERRE Entorno Else { $$ = new If($3, new Entorno($5, @1.first_line, @1.first_column), $6, @1.first_line, @1.first_column)  }
+    : IF PARABRE Valor PARCIERRE Entorno Else { arbol.generarIf(); $$ = new If($3, new EntornoI($5, @1.first_line, @1.first_column), $6, @1.first_line, @1.first_column)  }
 ;
 
 Else
-    : ELSE Entorno { $$ = new Entorno($2, @1.first_line, @1.first_column) } 
-    | ELSE If { $$ = $2 }
-    | { $$ = null }
+    : ELSE Entorno { arbol.generarElse(); $$ = new Entorno($2, @1.first_line, @1.first_column) } 
+    | ELSE If { arbol.generarElse(); $$ = $2 }
+    | { arbol.generarElse2(); $$ = null }
 ;
 
 Ciclo
-    : FOR PARABRE Param1 Valor PTCOMA Inicializacion PARCIERRE Entorno { let a =[]; a.push(new Entorno($8, @1.first_line, @1.first_column)); $3.push(new EntornoC($4, a, $6[0], @1.first_line, @1.first_column)); $$ = [ new Ciclo(new Entorno($3, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
-    | WHILE PARABRE Valor PARCIERRE Entorno { $$ = [new Ciclo(new EntornoC($3, $5, null, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
-    | DO Entorno WHILE PARABRE Valor PARCIERRE PTCOMA { $$ = [new Ciclo(new EntornoD($5, $2, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    : FOR PARABRE Param1 Valor PTCOMA Inicializacion PARCIERRE Entorno { arbol.generarFor(); $3.push(new EntornoC($4, $8, $6[0], @1.first_line, @1.first_column)); $$ = [ new Ciclo(new Entorno($3, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | WHILE PARABRE Valor PARCIERRE Entorno { arbol.generarWhile(); $$ = [new Ciclo(new EntornoC($3, $5, null, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
+    | DO Entorno WHILE PARABRE Valor PARCIERRE PTCOMA { arbol.generarDWhile(); $$ = [new Ciclo(new EntornoD($5, $2, @1.first_line, @1.first_column), @1.first_line, @1.first_column)] }
 ;
 
 Param1
-    : Declaraciones
-    | Inicializacion PTCOMA { $$ = $1 }
+    : Declaraciones { arbol.generarParam(); }
+    | Inicializacion PTCOMA { arbol.generarParam1(); $$ = $1 }
+;
+
+Switch
+    : SWITCH PARABRE Valor PARCIERRE LLAVEABRE EntornoS LLAVECIERRE
+;
+
+EntornoS
+    : Casos DEFAULT DOSPT Entorno
+    | Casos
+    | DEFAULT DOSPT Entorno
+;
+
+Casos
+    : CASE Valor DOSPT Entorno
+    | Casos CASE Valor DOSPT Entorno
 ;
 
 Entorno
-    : LLAVEABRE Instrucciones LLAVECIERRE { $$ = $2 }
-    | LLAVEABRE LLAVECIERRE { $$ = [] }
+    : LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarEntorno2(); $$ = $2 }
+    | LLAVEABRE LLAVECIERRE { arbol.generarEntorno(); $$ = [] }
 ;
 
 Break
-    : BREAK PTCOMA { $$ = [ new BREAK("Break", @1.first_line, @1.first_column) ] }
-    | CONTINUE PTCOMA { $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
-    | RETURN PTCOMA { $$ = [ new BREAK("Return", @1.first_line, @1.first_column) ] }
+    : BREAK PTCOMA { arbol.generarBreak("Break"); $$ = [ new BREAK("Break", @1.first_line, @1.first_column) ] }
+    | CONTINUE PTCOMA { arbol.generarBreak("Continue"); $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
+    | RETURN PTCOMA { arbol.generarBreak("Return"); $$ = [ new BREAK("Return", @1.first_line, @1.first_column) ] }
 ;

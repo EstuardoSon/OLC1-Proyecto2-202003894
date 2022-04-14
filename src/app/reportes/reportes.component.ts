@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { graphviz } from "d3-graphviz";
 import { BackendService } from '../services/backend.service';
 
 @Component({
@@ -29,8 +28,26 @@ export class ReportesComponent implements OnInit {
   }
 
   verAST() {
-    this.contenidoDiv = '';
-    console.log("hola");
-    //graphviz("#graph").renderDot('digraph {a -> b}');
+    this.backend.reporteAST().subscribe(
+      res => {
+        let infoSalida = JSON.parse(JSON.stringify(res))
+        this.contenidoDiv = '<h2>Realice las correciones de errores Sintacticos para tener el AST adecuado</h2>\n<div>' + infoSalida.Codigo + '</div>'
+      },
+      err => {
+        console.log("Error en la Peticion");
+      }
+    )
+  }
+
+  verSimbolos() {
+    this.backend.reporteSimbolos().subscribe(
+      res => {
+        let infoSalida = JSON.parse(JSON.stringify(res))
+        this.contenidoDiv = '<div>' + infoSalida.Codigo + '</div>'
+      },
+      err => {
+        console.log("Error en la Peticion");
+      }
+    )
   }
 }
