@@ -274,14 +274,14 @@ Switch
 ;
 
 EntornoS
-    : Casos DEFAULT DOSPT Entorno { arbol.generarEntornoS(); $1.push(new EntornoCase(null, $4, @1.first_line, @1.first_column)); $$ = $1 }
+    : Casos DEFAULT DOSPT Instrucciones { arbol.generarEntornoS(); $1.push(new EntornoCase(null, $4, @1.first_line, @1.first_column)); $$ = $1 }
     | Casos { arbol.generarEntornoS2(); $$ = $1 }
-    | DEFAULT DOSPT Entorno { arbol.generarEntornoS3(); $$ = [new EntornoCase(null, $3, @1.first_line, @1.first_column)] }
+    | DEFAULT DOSPT Instrucciones { arbol.generarEntornoS3(); $$ = [new EntornoCase(null, $3, @1.first_line, @1.first_column)] }
 ;
 
 Casos
-    : CASE Valor DOSPT Entorno { arbol.generarCasos(); $$ = [new EntornoCase($2, $4, @1.first_line, @1.first_column)] }
-    | Casos CASE Valor DOSPT Entorno { arbol.generarCasos2(); $1.push(new EntornoCase($3, $5, @1.first_line, @1.first_column)); $$=$1}
+    : CASE Valor DOSPT Instrucciones { arbol.generarCasos(); $$ = [new EntornoCase($2, $4, @1.first_line, @1.first_column)] }
+    | Casos CASE Valor DOSPT Instrucciones { arbol.generarCasos2(); $1.push(new EntornoCase($3, $5, @1.first_line, @1.first_column)); $$=$1}
 ;
 
 Entorno

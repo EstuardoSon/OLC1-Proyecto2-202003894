@@ -22,7 +22,7 @@ export class Casteo extends Expresion {
                 return { value: Math.round(value.value), type: 0 }
             }
             else if (value.type == 3) {
-                return { value: String(value.value).charCodeAt(0), type: 0 }
+                return { value: Number(String(value.value).charCodeAt(0)), type: 0 }
             }
             throw new ErrorE(this.linea, this.columna, 'Semantico', 'No es posible hacer el casteo de: '+ value.value +" a Int");
         }

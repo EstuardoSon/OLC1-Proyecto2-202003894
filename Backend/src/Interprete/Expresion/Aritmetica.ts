@@ -16,7 +16,7 @@ export class Aritmetica extends Expresion {
         if (typeof(valorDerecha.value) == 'object'){ throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que [${valorDerecha.value}] no es un dato primitivo`) }
 
         var dominante = this.tipoDominante(this.operador, valorIzquierda.type, valorDerecha.type);
-
+        
         if (dominante == null) { 
             switch(this.operador){
                 case 0:
@@ -45,23 +45,23 @@ export class Aritmetica extends Expresion {
 
                 if (dominante == 0) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
-                    return { value: Math.round(valorIz + valorDer), type: dominante }
+                    return { value: valorIz + valorDer, type: dominante }
 
                 } else if (dominante == 1) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -75,11 +75,11 @@ export class Aritmetica extends Expresion {
 
                 if (dominante == 0) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -87,11 +87,11 @@ export class Aritmetica extends Expresion {
 
                 } else if (dominante == 1) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -102,11 +102,11 @@ export class Aritmetica extends Expresion {
 
                 if (dominante == 0) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -114,11 +114,11 @@ export class Aritmetica extends Expresion {
 
                 } else if (dominante == 1) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -129,11 +129,11 @@ export class Aritmetica extends Expresion {
             else if (this.operador == 3) {
 
                 let valorIz: number, valorDer: number;
-                if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                 else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                 else { valorIz = Number(valorIzquierda.value) }
 
-                if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                 else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                 else { valorDer = Number(valorDerecha.value) }
 
@@ -148,11 +148,11 @@ export class Aritmetica extends Expresion {
 
                 if (dominante == 0) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -160,11 +160,11 @@ export class Aritmetica extends Expresion {
 
                 } else if (dominante == 1) {
                     let valorIz: number, valorDer: number;
-                    if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                    if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                     else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                     else { valorIz = Number(valorIzquierda.value) }
 
-                    if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                    if (valorDerecha.type == 3) { valorDer = Number(valorDerecha.value.charCodeAt(0)); }
                     else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                     else { valorDer = Number(valorDerecha.value) }
 
@@ -174,11 +174,11 @@ export class Aritmetica extends Expresion {
 
             else if (this.operador == 5) {
                 let valorIz: number, valorDer: number;
-                if (valorIzquierda.type == 3) { valorIz = valorIzquierda.value.chartCodeAt(0); }
+                if (valorIzquierda.type == 3) { valorIz = Number(valorIzquierda.value.charCodeAt(0)); }
                 else if (valorIzquierda.type == 2) { if (valorIzquierda.value) { valorIz = 1; } else { valorIz = 0; } }
                 else { valorIz = Number(valorIzquierda.value) }
 
-                if (valorDerecha.type == 3) { valorDer = valorDerecha.value.chartCodeAt(0); }
+                if (valorDerecha.type == 3) { valorDer = valorDerecha.value.charCodeAt(0); }
                 else if (valorDerecha.type == 2) { if (valorDerecha.value) { valorDer = 1; } else { valorDer = 0; } }
                 else { valorDer = Number(valorDerecha.value) }
 

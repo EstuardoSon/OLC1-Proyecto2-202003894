@@ -58,7 +58,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 if (dominante == 0) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -72,7 +72,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -85,12 +85,12 @@ var Aritmetica = /** @class */ (function (_super) {
                     else {
                         valorDer = Number(valorDerecha.value);
                     }
-                    return { value: Math.round(valorIz + valorDer), type: dominante };
+                    return { value: valorIz + valorDer, type: dominante };
                 }
                 else if (dominante == 1) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -104,7 +104,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -127,7 +127,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 if (dominante == 0) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -141,7 +141,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -159,7 +159,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 else if (dominante == 1) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -173,7 +173,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -193,7 +193,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 if (dominante == 0) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -207,7 +207,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -225,7 +225,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 else if (dominante == 1) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -239,7 +239,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -258,7 +258,7 @@ var Aritmetica = /** @class */ (function (_super) {
             else if (this.operador == 3) {
                 var valorIz = void 0, valorDer = void 0;
                 if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
+                    valorIz = Number(valorIzquierda.value.charCodeAt(0));
                 }
                 else if (valorIzquierda.type == 2) {
                     if (valorIzquierda.value) {
@@ -272,7 +272,7 @@ var Aritmetica = /** @class */ (function (_super) {
                     valorIz = Number(valorIzquierda.value);
                 }
                 if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
+                    valorDer = Number(valorDerecha.value.charCodeAt(0));
                 }
                 else if (valorDerecha.type == 2) {
                     if (valorDerecha.value) {
@@ -296,7 +296,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 if (dominante == 0) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -310,7 +310,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -328,7 +328,7 @@ var Aritmetica = /** @class */ (function (_super) {
                 else if (dominante == 1) {
                     var valorIz = void 0, valorDer = void 0;
                     if (valorIzquierda.type == 3) {
-                        valorIz = valorIzquierda.value.chartCodeAt(0);
+                        valorIz = Number(valorIzquierda.value.charCodeAt(0));
                     }
                     else if (valorIzquierda.type == 2) {
                         if (valorIzquierda.value) {
@@ -342,7 +342,7 @@ var Aritmetica = /** @class */ (function (_super) {
                         valorIz = Number(valorIzquierda.value);
                     }
                     if (valorDerecha.type == 3) {
-                        valorDer = valorDerecha.value.chartCodeAt(0);
+                        valorDer = Number(valorDerecha.value.charCodeAt(0));
                     }
                     else if (valorDerecha.type == 2) {
                         if (valorDerecha.value) {
@@ -361,7 +361,7 @@ var Aritmetica = /** @class */ (function (_super) {
             else if (this.operador == 5) {
                 var valorIz = void 0, valorDer = void 0;
                 if (valorIzquierda.type == 3) {
-                    valorIz = valorIzquierda.value.chartCodeAt(0);
+                    valorIz = Number(valorIzquierda.value.charCodeAt(0));
                 }
                 else if (valorIzquierda.type == 2) {
                     if (valorIzquierda.value) {
@@ -375,7 +375,7 @@ var Aritmetica = /** @class */ (function (_super) {
                     valorIz = Number(valorIzquierda.value);
                 }
                 if (valorDerecha.type == 3) {
-                    valorDer = valorDerecha.value.chartCodeAt(0);
+                    valorDer = valorDerecha.value.charCodeAt(0);
                 }
                 else if (valorDerecha.type == 2) {
                     if (valorDerecha.value) {
