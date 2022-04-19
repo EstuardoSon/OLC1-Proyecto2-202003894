@@ -6,7 +6,7 @@ var parser = require('../Grammar/grammar');
 export class Ambito {
     public variables: Map<string, Simbolo>;
 
-    constructor(public anterior: Ambito | null, public nombre:string) {
+    constructor(public anterior: Ambito | null, public nombre: string, public marcador: boolean) {
         this.variables = new Map()
     }
 
@@ -17,12 +17,13 @@ export class Ambito {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
                 const val = entorno.variables.get(id)
                 if (val.tipo == tipo) {
-                    parser.TablaSimbolos.find(object =>{
-                        if(object[1]==id.toLocaleLowerCase()){
-                            object[2]=valor;
+                    parser.TablaSimbolos.find(object => {
+                        if (object[1] == id.toLocaleLowerCase()) {
+                            object[2] = valor;
                         }
                     });
                     entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 0))
+                    break;
                 } else {
                     throw new ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + valor + ' a ' + id + " porque no son del mismo tipo");
                 }
@@ -35,12 +36,21 @@ export class Ambito {
         let entorno: Ambito | null = this
 
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior
             }
-            entorno = entorno.anterior
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null
+            }
         }
-        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Primitiva"])
+
+        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 0))
     }
 
@@ -60,12 +70,21 @@ export class Ambito {
         let entorno: Ambito | null = this
 
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior
             }
-            entorno = entorno.anterior
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null
+            }
         }
-        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Matriz"])
+
+        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 2))
     }
 
@@ -74,12 +93,13 @@ export class Ambito {
 
         while (entorno != null) {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
-                parser.TablaSimbolos.find(object =>{
-                    if(object[1]==id.toLocaleLowerCase()){
-                        object[2]=valor;
+                parser.TablaSimbolos.find(object => {
+                    if (object[1] == id.toLocaleLowerCase()) {
+                        object[2] = valor;
                     }
                 });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 2))
+                break;
             }
             entorno = entorno.anterior
         }
@@ -89,12 +109,21 @@ export class Ambito {
         let entorno: Ambito | null = this
 
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior
             }
-            entorno = entorno.anterior
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null
+            }
         }
-        parser.TablaSimbolos.push([this.nombre,id.toLocaleLowerCase(), valor , tipo, "Vector"])
+
+        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"])
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 1))
     }
 
@@ -103,12 +132,13 @@ export class Ambito {
 
         while (entorno != null) {
             if (entorno.variables.has(id.toLocaleLowerCase())) {
-                parser.TablaSimbolos.find(object =>{
-                    if(object[1]==id.toLocaleLowerCase()){
-                        object[2]=valor;
+                parser.TablaSimbolos.find(object => {
+                    if (object[1] == id.toLocaleLowerCase()) {
+                        object[2] = valor;
                     }
                 });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 1))
+                break;
             }
             entorno = entorno.anterior
         }

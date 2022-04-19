@@ -11,7 +11,7 @@ export class Entorno extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Pfor");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Pfor",false);
 
         for (let i of this.instruccines) {
             try {
@@ -33,7 +33,7 @@ export class EntornoI extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - If");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - If", false);
 
         for (let i of this.instruccines) {
             try {
@@ -59,7 +59,7 @@ export class EntornoC extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
 
         while (ejeCondicion.value) {
             for (let i of this.instruccines) {
@@ -90,7 +90,7 @@ export class EntornoD extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
 
         do {
             for (let i of this.instruccines) {
@@ -115,7 +115,7 @@ export class EntornoCase extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Case");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Case", false);
 
         for (let i of this.instruccines) {
             try {
@@ -138,7 +138,7 @@ export class EntornoW extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Switch");
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Switch",false);
         for (let i of this.instruccines) {
             try {
                 let comparacion;

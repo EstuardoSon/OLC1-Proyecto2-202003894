@@ -29,7 +29,7 @@ var Entorno = /** @class */ (function (_super) {
         return _this;
     }
     Entorno.prototype.ejecutar = function (ambito) {
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Pfor");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Pfor", false);
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
@@ -56,7 +56,7 @@ var EntornoI = /** @class */ (function (_super) {
         return _this;
     }
     EntornoI.prototype.ejecutar = function (ambito) {
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - If");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - If", false);
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
@@ -89,7 +89,7 @@ var EntornoC = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
         while (ejeCondicion.value) {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
@@ -130,7 +130,7 @@ var EntornoD = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
         do {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
@@ -164,7 +164,7 @@ var EntornoCase = /** @class */ (function (_super) {
         return _this;
     }
     EntornoCase.prototype.ejecutar = function (ambito) {
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Case");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Case", false);
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
@@ -195,7 +195,7 @@ var EntornoW = /** @class */ (function (_super) {
         return _this;
     }
     EntornoW.prototype.ejecutar = function (ambito) {
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Switch");
+        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Switch", false);
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {

@@ -31,7 +31,11 @@ export class ReportesComponent implements OnInit {
     this.backend.reporteAST().subscribe(
       res => {
         let infoSalida = JSON.parse(JSON.stringify(res))
-        this.contenidoDiv = '<h2>Realice las correciones de errores Sintacticos para tener el AST adecuado</h2>\n<div>' + infoSalida.Codigo + '</div>'
+        console.log(infoSalida.Codigo)
+        if (infoSalida.Codigo) {
+          console.log("ejecutar")
+          this.contenidoDiv = '<h2>Realice las correciones de errores Sintacticos para tener el AST adecuado</h2>\n<img src="../../assets/ast.svg"></img>'
+        }
       },
       err => {
         console.log("Error en la Peticion");

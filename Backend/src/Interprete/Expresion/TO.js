@@ -140,10 +140,10 @@ var TypeOF = /** @class */ (function (_super) {
     }
     TypeOF.prototype.ejecutar = function (ambito) {
         var value = this.valor.ejecutar(ambito);
-        if (typeof (value.value) == 'object' && typeof (value.value[0]) == 'object') {
+        if (value.value instanceof Array && value.value[0] instanceof Array) {
             return { value: "Matriz", type: 4 };
         }
-        else if (typeof (value.value) == 'object') {
+        else if (value.value instanceof Array) {
             return { value: "Vector", type: 4 };
         }
         else if (value.type == 0) {

@@ -1,5 +1,6 @@
 import { ErrorE } from "../Error/Error";
 import { Ambito } from "../Extra/Ambito";
+import { NodoArbol } from "../Extra/Arbol";
 import { Expresion } from "./Expresion";
 import { Retorno, Type } from "./Retorno";
 
@@ -105,8 +106,8 @@ export class TypeOF extends Expresion{
     public ejecutar(ambito: Ambito): Retorno {
         const value = this.valor.ejecutar(ambito)
 
-        if (typeof(value.value) == 'object' && typeof(value.value[0]) == 'object'){ return { value: "Matriz", type: 4 } }
-        else if (typeof(value.value) == 'object'){ return { value: "Vector", type: 4 }}
+        if (value.value instanceof Array && value.value[0] instanceof Array){ return { value: "Matriz", type: 4 } }
+        else if (value.value instanceof Array){ return { value: "Vector", type: 4 }}
         else if (value.type == 0) { return { value: "Int", type: 4 } }
         else if (value.type == 1) { return { value: "Double", type: 4 } }
         else if (value.type == 2) { return { value: "Boolean", type: 4 } }

@@ -40,6 +40,7 @@
 \/\*[^\*]*[\*]+([^/\*][^\*]*(\*)+)*\/ //COMENTARIO MULTILINEA
 
 //PALABRAS RESERVADAS
+"void" return 'VOID';
 "int" return 'INT';
 "double" return 'DOUBLE';
 "boolean" return 'BOOLEAN';
@@ -233,8 +234,6 @@ Valor
     | PARABRE TipoVar PARCIERRE Valor %prec CAST1 { arbol.generarValorCasteo(); $$ = new Casteo($4, $2, @1.first_line, @1.first_column) }
     | TOSTRING PARABRE Valor PARCIERRE { arbol.generarValorFuncion("ToString"); $$ = new TOString($3, @1.first_line, @1.first_column) }
     | LENGTH PARABRE Valor PARCIERRE { arbol.generarValorFuncion("length"); $$ = new LENGHT($3, @1.first_line, @1.first_column) }
-    //| LENGTH PARABRE CORCHETEABRE ListaValores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
-    //| LENGTH PARABRE CORCHETEABRE ListaVectores CORCHETECIERRE PARCIERRE { $$ = new LENGHT2($4, @1.first_line, @1.first_column) }
     | TOLOWER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toLower");  $$ = new TOLower($3, @1.first_line, @1.first_column) }
     | TOUPPER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toUpper"); $$ = new TOUpper($3, @1.first_line, @1.first_column) }
     | TYPEOF PARABRE Valor PARCIERRE { arbol.generarValorFuncion("typeOf"); $$ = new TypeOF($3, @1.first_line, @1.first_column) }
@@ -277,6 +276,7 @@ EntornoS
     : Casos DEFAULT DOSPT Instrucciones { arbol.generarEntornoS(); $1.push(new EntornoCase(null, $4, @1.first_line, @1.first_column)); $$ = $1 }
     | Casos { arbol.generarEntornoS2(); $$ = $1 }
     | DEFAULT DOSPT Instrucciones { arbol.generarEntornoS3(); $$ = [new EntornoCase(null, $3, @1.first_line, @1.first_column)] }
+    | DEFAULT DOSPT { arbol.generarEntornoS4(); $$ = [new EntornoCase(null, [], @1.first_line, @1.first_column)] }
 ;
 
 Casos
@@ -294,4 +294,8 @@ Break
     | CONTINUE PTCOMA { arbol.generarBreak("Continue"); $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
     | RETURN PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN(null, @1.first_line, @1.first_column) ] }
     | RETURN Valor PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN($2, @1.first_line, @1.first_column) ] }
+;
+
+Funciones
+    : IDENTIFICADOR PARABRE Parametros PARCIERRE DOSPT TipoVar instruccion
 ;

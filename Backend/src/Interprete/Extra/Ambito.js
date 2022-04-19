@@ -5,9 +5,10 @@ var Error_1 = require("../Error/Error");
 var Simbolo_1 = require("./Simbolo");
 var parser = require('../Grammar/grammar');
 var Ambito = /** @class */ (function () {
-    function Ambito(anterior, nombre) {
+    function Ambito(anterior, nombre, marcador) {
         this.anterior = anterior;
         this.nombre = nombre;
+        this.marcador = marcador;
         this.variables = new Map();
     }
     Ambito.prototype.modVal = function (id, valor, tipo, linea, columna) {
@@ -22,6 +23,7 @@ var Ambito = /** @class */ (function () {
                         }
                     });
                     entorno.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 0));
+                    break;
                 }
                 else {
                     throw new Error_1.ErrorE(linea, columna, 'Semantico', 'No se puede asignar: ' + valor + ' a ' + id + " porque no son del mismo tipo");
@@ -33,10 +35,18 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.setVal = function (id, valor, tipo, linea, columna) {
         var entorno = this;
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior;
             }
-            entorno = entorno.anterior;
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null;
+            }
         }
         parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"]);
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 0));
@@ -54,10 +64,18 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.setValM = function (id, valor, tipo, linea, columna) {
         var entorno = this;
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior;
             }
-            entorno = entorno.anterior;
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null;
+            }
         }
         parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"]);
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 2));
@@ -72,6 +90,7 @@ var Ambito = /** @class */ (function () {
                     }
                 });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 2));
+                break;
             }
             entorno = entorno.anterior;
         }
@@ -79,10 +98,18 @@ var Ambito = /** @class */ (function () {
     Ambito.prototype.setValV = function (id, valor, tipo, linea, columna) {
         var entorno = this;
         while (entorno != null) {
-            if (entorno.variables.has(id.toLocaleLowerCase())) {
-                throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+            if (!entorno.marcador) {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = entorno.anterior;
             }
-            entorno = entorno.anterior;
+            else {
+                if (entorno.variables.has(id.toLocaleLowerCase())) {
+                    throw new Error_1.ErrorE(linea, columna, 'Semantico', "La variable: " + id + " ya existe");
+                }
+                entorno = null;
+            }
         }
         parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"]);
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 1));
@@ -97,6 +124,7 @@ var Ambito = /** @class */ (function () {
                     }
                 });
                 entorno.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 1));
+                break;
             }
             entorno = entorno.anterior;
         }

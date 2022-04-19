@@ -15,7 +15,7 @@ var Arbol = /** @class */ (function () {
             for (var _i = 0, _a = raiz.hijos; _i < _a.length; _i++) {
                 var hijo = _a[_i];
                 if (hijo != null) {
-                    this.enlaces += "n".concat(raiz.numero, " -> n").concat(hijo.numero, "; ");
+                    this.enlaces += "n".concat(raiz.numero, " -> n").concat(hijo.numero, "; \n");
                     this.generarEnlaces(hijo);
                 }
             }
@@ -25,7 +25,7 @@ var Arbol = /** @class */ (function () {
         var instruccion = this.generarPrduccion("ini");
         instruccion.hijos = [this.pila.pop()];
         this.generarEnlaces(instruccion);
-        this.dot = "digraph G {<br>" + this.nodos + this.enlaces + "<br>}";
+        this.dot = "digraph G {\n" + this.nodos + this.enlaces + "\n}";
     };
     Arbol.prototype.generarTipoInstruccion = function () {
         var hijos = [this.pila.pop()];
@@ -395,6 +395,12 @@ var Arbol = /** @class */ (function () {
         instruccion.insertarHijos(hijos);
         this.pila.push(instruccion);
     };
+    Arbol.prototype.generarEntornoS4 = function () {
+        var hijos = [this.generarHijo("Default"), this.generarHijo(":")];
+        var instruccion = this.generarPrduccion("Param1");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
     Arbol.prototype.generarSwitch = function () {
         var dato2 = this.pila.pop();
         var hijos = [this.generarHijo("Switch"), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), this.generarHijo("{"), dato2, this.generarHijo("}")];
@@ -404,13 +410,13 @@ var Arbol = /** @class */ (function () {
     };
     Arbol.prototype.generarHijo = function (texto) {
         var hijo = new NodoArbol(texto, this.contador);
-        hijo.nodo = "n".concat(this.contador, "[label=\"").concat(texto, "\"];<br>");
+        hijo.nodo = "n".concat(this.contador, "[label=\"").concat(texto, "\"];");
         this.contador++;
         return hijo;
     };
     Arbol.prototype.generarPrduccion = function (texto) {
         var hijo = new NodoArbol(texto, this.contador);
-        hijo.nodo = "n".concat(this.contador, "[label=\"").concat(texto, "\", style=filled];<br>");
+        hijo.nodo = "n".concat(this.contador, "[label=\"").concat(texto, "\", style=filled];");
         this.contador++;
         return hijo;
     };
