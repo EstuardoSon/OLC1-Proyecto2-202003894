@@ -1,9 +1,11 @@
 const { Ambito } = require('../src/Interprete/Extra/Ambito');
+const { Funcion, LlamadoFuncion } = require('../src/Interprete/Instruccion/Funcion');
 var parser = require('../src/Interprete/Grammar/grammar');
 var tabla = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Linea</th><th>Columna</th><th>Tipo</th><th>Mensaje</th></tr></thead></table>";
 var tablaS = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Entorno</th><th>Nombre</th><th>Valor</th><th>Tipo Dato</th><th>Tipo Variable</th></tr></thead></table>";
 var exec = require('child_process');
 var fs = require('fs');
+const { ErrorE } = require('../src/Interprete/Error/Error');
 var ContenidoEditor = { Codigo: "", Error: "" }
 var Dot = "digraph G{}";
 
@@ -16,11 +18,28 @@ exports.ingresarCodigo = async (req, res) => {
     let ambi = new Ambito(null, "global", false);
     for (i of result) {
         try {
-            i.ejecutar(ambi);
+            if (i instanceof Funcion){
+                i.ejecutar(ambi);
+            }
         } catch (error) {
             parser.Errores.push(error)
         }
     }
+
+    for (i of result) {
+        try {
+            if (!(i instanceof Funcion) && !(i instanceof LlamadoFuncion)){
+                i.ejecutar(ambi);
+            }
+            else if(i instanceof LlamadoFuncion){
+                throw new ErrorE(i.linea, i.columna, "Semantico", "No es posible ejecutar la instruccion");
+            }
+        } catch (error) {
+            parser.Errores.push(error)
+        }
+    }
+
+
     Dot = parser.arbol.dot;
 
     tablaS = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Entorno</th><th>Nombre</th><th>Valor</th><th>Tipo Dato</th><th>Tipo Variable</th></tr></thead>";

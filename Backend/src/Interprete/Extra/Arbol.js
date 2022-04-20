@@ -408,6 +408,70 @@ var Arbol = /** @class */ (function () {
         instruccion.insertarHijos(hijos);
         this.pila.push(instruccion);
     };
+    Arbol.prototype.generarLlamado = function (nombre) {
+        var hijos = [this.generarHijo(nombre), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), this.generarHijo(";")];
+        var instruccion = this.generarPrduccion("LlamadoFuncion");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarLlamado1 = function (nombre) {
+        var hijos = [this.generarHijo(nombre), this.generarHijo("("), this.generarHijo(")"), this.generarHijo(";")];
+        var instruccion = this.generarPrduccion("LlamadoFuncion");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarRun = function () {
+        var hijos = [this.generarHijo("Run"), this.pila.pop()];
+        var instruccion = this.generarPrduccion("Run");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarLParam = function (nombre) {
+        var dato2 = this.pila.pop();
+        var hijos = [this.pila.pop(), this.generarHijo(","), dato2, this.generarHijo(nombre)];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarLParam1 = function (nombre) {
+        var hijos = [this.pila.pop(), this.generarHijo(nombre)];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarTipoFunc = function () {
+        var hijos = [this.generarHijo(":"), this.pila.pop()];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarTipoFunc1 = function () {
+        var hijos = [this.generarHijo(":"), this.generarHijo("void")];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarTipoFunc2 = function () {
+        var hijos = [this.generarHijo("--")];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarFuncMetod = function (nombre) {
+        var dato3 = this.pila.pop();
+        var dato2 = this.pila.pop();
+        var hijos = [this.generarHijo(nombre), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), dato2, this.generarHijo("{"), dato3, this.generarHijo("}")];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
+    Arbol.prototype.generarFuncMetod1 = function (nombre) {
+        var dato2 = this.pila.pop();
+        var hijos = [this.generarHijo(nombre), this.generarHijo("("), this.generarHijo(")"), this.pila.pop(), this.generarHijo("{"), dato2, this.generarHijo("}")];
+        var instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    };
     Arbol.prototype.generarHijo = function (texto) {
         var hijo = new NodoArbol(texto, this.contador);
         hijo.nodo = "n".concat(this.contador, "[label=\"").concat(texto, "\"];");

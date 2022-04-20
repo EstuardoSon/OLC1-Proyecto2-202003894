@@ -10,8 +10,9 @@
     const {ErrorE} = require('../Error/Error')
     const {If} = require('../Instruccion/If')
     const {Ciclo} = require('../Instruccion/Ciclo')
-    const {BREAK} = require('../Instruccion/BreakContinue')
-    const {Entorno,EntornoI, EntornoC, EntornoD, EntornoCase, EntornoW} = require('../Instruccion/Entorno')
+    const {BREAK, RETURN} = require('../Instruccion/BreakContinue')
+    const {Funcion, LlamadoFuncion, Run} = require('../Instruccion/Funcion')
+    const {Entorno,EntornoI, EntornoC, EntornoD, EntornoCase, EntornoW, EntornoF} = require('../Instruccion/Entorno')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
     const {Switch} = require('../Instruccion/Switch')
     const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
@@ -125,6 +126,7 @@
 %nonassoc 'DECREMENTO' 'INCREMENTO'
 %right CAST1
 %right UMINUS
+
 %start ini
 
 %%
@@ -149,6 +151,9 @@ TipoInstruccion
     | Ciclo { arbol.generarTipoInstruccion(); }
     | Break { arbol.generarTipoInstruccion(); }
     | Switch { arbol.generarTipoInstruccion(); }
+    | LlamadoFuncion { arbol.generarTipoInstruccion(); }
+    | Run { arbol.generarTipoInstruccion(); }
+    | FuncMetod { arbol.generarTipoInstruccion(); }
     | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado Recouperado con: ;"  )); $$=[] }
 ;
 
@@ -238,6 +243,8 @@ Valor
     | TOUPPER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toUpper"); $$ = new TOUpper($3, @1.first_line, @1.first_column) }
     | TYPEOF PARABRE Valor PARCIERRE { arbol.generarValorFuncion("typeOf"); $$ = new TypeOF($3, @1.first_line, @1.first_column) }
     | ROUND PARABRE Valor PARCIERRE { arbol.generarValorFuncion("round"); $$ = new Redondear($3, @1.first_line, @1.first_column) }
+    | IDENTIFICADOR PARABRE PARCIERRE 
+    | IDENTIFICADOR PARABRE ListaValores PARCIERRE 
 ;
 
 Print
@@ -296,6 +303,27 @@ Break
     | RETURN Valor PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN($2, @1.first_line, @1.first_column) ] }
 ;
 
-Funciones
-    : IDENTIFICADOR PARABRE Parametros PARCIERRE DOSPT TipoVar instruccion
+FuncMetod
+    : IDENTIFICADOR PARABRE ListaParametros PARCIERRE tipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod($1); $$ = [new Funcion($1, new EntornoF($7, @1.first_line, @1.first_column), $3, $5, @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR PARABRE PARCIERRE tipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod($1); $$ = [new Funcion($1, new EntornoF($6, @1.first_line, @1.first_column), [], $4, @1.first_line, @1.first_column)] }
+;
+
+tipoFunc
+    : DOSPT TipoVar { arbol.generarTipoFunc(); $$ = $2 }
+    | DOSPT VOID { arbol.generarTipoFunc1(); $$ = null }
+    | { arbol.generarTipoFunc2(); $$ = null}
+;
+
+ListaParametros
+    : ListaParametros COMA TipoVar IDENTIFICADOR { arbol.generarLParam($4); $1.push({nombre: $4, tipo: $3}); $$ = $1 }
+    | TipoVar IDENTIFICADOR { arbol.generarLParam1($2); $$ = [{nombre: $2, tipo: $1}] }
+;
+
+Run
+    : RUN LlamadoFuncion { arbol.generarRun(); $$ = [ new Run( $2[0], @1.first_line, @1.first_column ) ]  }
+;
+
+LlamadoFuncion
+    : IDENTIFICADOR PARABRE ListaValores PARCIERRE PTCOMA { arbol.generarLlamado($1); $$ = [new LlamadoFuncion( $1, $3, @1.first_line, @1.first_column )] }
+    | IDENTIFICADOR PARABRE PARCIERRE PTCOMA { arbol.generarLlamado1($1); $$ = [new LlamadoFuncion( $1, [], @1.first_line, @1.first_column )] }
 ;

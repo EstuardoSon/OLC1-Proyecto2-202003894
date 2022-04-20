@@ -467,6 +467,80 @@ export class Arbol {
         this.pila.push(instruccion);
     }
 
+    public generarLlamado(nombre:string) {
+        const hijos = [this.generarHijo(nombre), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), this.generarHijo(";")]
+        const instruccion = this.generarPrduccion("LlamadoFuncion");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarLlamado1(nombre:string) {
+        const hijos = [this.generarHijo(nombre), this.generarHijo("("), this.generarHijo(")"), this.generarHijo(";")]
+        const instruccion = this.generarPrduccion("LlamadoFuncion");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarRun() {
+        const hijos = [this.generarHijo("Run"),this.pila.pop()]
+        const instruccion = this.generarPrduccion("Run");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarLParam(nombre:string) {
+        let dato2 = this.pila.pop();
+        const hijos = [this.pila.pop(), this.generarHijo(","), dato2, this.generarHijo(nombre)]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarLParam1(nombre:string) {
+        const hijos = [this.pila.pop(), this.generarHijo(nombre)]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarTipoFunc() {
+        const hijos = [this.generarHijo(":"), this.pila.pop()]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarTipoFunc1() {
+        const hijos = [this.generarHijo(":"), this.generarHijo("void")]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarTipoFunc2() {
+        const hijos = [this.generarHijo("--")]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarFuncMetod(nombre:string) {
+        let dato3 = this.pila.pop()
+        let dato2 = this.pila.pop()
+        const hijos = [this.generarHijo(nombre), this.generarHijo("("), this.pila.pop(), this.generarHijo(")"), dato2, this.generarHijo("{"), dato3, this.generarHijo("}")]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
+    public generarFuncMetod1(nombre:string) {
+        let dato2 = this.pila.pop()
+        const hijos = [this.generarHijo(nombre), this.generarHijo("("), this.generarHijo(")"), this.pila.pop(), this.generarHijo("{"), dato2, this.generarHijo("}")]
+        const instruccion = this.generarPrduccion("ListaParametros");
+        instruccion.insertarHijos(hijos);
+        this.pila.push(instruccion);
+    }
+
     public generarHijo(texto: string) {
         const hijo = new NodoArbol(texto, this.contador);
         hijo.nodo = `n${this.contador}[label="${texto}"];`

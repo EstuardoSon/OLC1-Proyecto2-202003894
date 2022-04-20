@@ -1,13 +1,16 @@
 import { ErrorE } from "../Error/Error";
 import { Type } from "../Expresion/Retorno";
+import { Funcion } from "../Instruccion/Funcion";
 import { Simbolo } from "./Simbolo";
 var parser = require('../Grammar/grammar');
 
 export class Ambito {
     public variables: Map<string, Simbolo>;
+    public funciones: Map<string, Funcion>;
 
     constructor(public anterior: Ambito | null, public nombre: string, public marcador: boolean) {
         this.variables = new Map()
+        this.funciones = new Map()
     }
 
     public modVal(id: string, valor: any, tipo: Type, linea, columna) {
@@ -142,5 +145,38 @@ export class Ambito {
             }
             entorno = entorno.anterior
         }
+    }
+
+    public setFunc(nombre:string, valor:Funcion, linea:number, columna:number){
+        let entorno: Ambito | null = this
+        while (entorno != null) {
+            if (entorno.funciones.has(nombre.toLocaleLowerCase())) {
+                throw new ErrorE(linea, columna, "Semantico", "La funcion ya existe");
+            }
+            entorno = entorno.anterior
+        }
+        parser.TablaSimbolos.push([this.nombre, nombre.toLocaleLowerCase(), valor, valor.retorno, "Funcion o Metodo"])
+        this.funciones.set(nombre.toLocaleLowerCase(), valor)
+    }
+
+    public getFunc(id: string): Funcion {
+        let entorno: Ambito | null = this
+        while (entorno != null) {
+            if (entorno.funciones.has(id.toLocaleLowerCase())) {
+                return entorno.funciones.get(id.toLocaleLowerCase())
+            }
+            entorno = entorno.anterior
+        }
+
+        return null
+    }
+
+    public getGlobal(): Ambito {
+        let entorno: Ambito | null = this
+        while (entorno.anterior != null) {
+            entorno = entorno.anterior
+        }
+
+        return entorno;
     }
 }

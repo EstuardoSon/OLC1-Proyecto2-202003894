@@ -15,10 +15,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.EntornoW = exports.EntornoCase = exports.EntornoD = exports.EntornoC = exports.EntornoI = exports.Entorno = void 0;
+exports.EntornoF = exports.EntornoW = exports.EntornoCase = exports.EntornoD = exports.EntornoC = exports.EntornoI = exports.Entorno = void 0;
 var Error_1 = require("../Error/Error");
 var Relacional_1 = require("../Expresion/Relacional");
 var Ambito_1 = require("../Extra/Ambito");
+var Funcion_1 = require("./Funcion");
 var Instruccion_1 = require("./Instruccion");
 var parser = require('../Grammar/grammar');
 var Entorno = /** @class */ (function (_super) {
@@ -94,14 +95,19 @@ var EntornoC = /** @class */ (function (_super) {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
                 try {
-                    var respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break' || respuesta.type == 'Return') {
-                            return respuesta;
+                    if (!(i instanceof Funcion_1.Funcion)) {
+                        var respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break' || respuesta.type == 'Return') {
+                                return respuesta;
+                            }
+                            else if (respuesta.type == 'Continue') {
+                                break;
+                            }
                         }
-                        else if (respuesta.type == 'Continue') {
-                            break;
-                        }
+                    }
+                    else {
+                        throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                     }
                 }
                 catch (error) {
@@ -135,14 +141,19 @@ var EntornoD = /** @class */ (function (_super) {
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
                 try {
-                    var respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break' || respuesta.type == 'Return') {
-                            return respuesta;
+                    if (!(i instanceof Funcion_1.Funcion)) {
+                        var respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break' || respuesta.type == 'Return') {
+                                return respuesta;
+                            }
+                            else if (respuesta.type == 'Continue') {
+                                break;
+                            }
                         }
-                        else if (respuesta.type == 'Continue') {
-                            break;
-                        }
+                    }
+                    else {
+                        throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                     }
                 }
                 catch (error) {
@@ -168,14 +179,19 @@ var EntornoCase = /** @class */ (function (_super) {
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
-                var respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Return') {
-                        return respuesta;
+                if (!(i instanceof Funcion_1.Funcion)) {
+                    var respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Return') {
+                            return respuesta;
+                        }
+                        else if (respuesta.type == 'Continue') {
+                            return respuesta;
+                        }
                     }
-                    else if (respuesta.type == 'Continue') {
-                        return respuesta;
-                    }
+                }
+                else {
+                    throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                 }
             }
             catch (error) {
@@ -207,14 +223,19 @@ var EntornoW = /** @class */ (function (_super) {
                     comparacion = new Relacional_1.Relacional(this.valor, this.valor, 0, this.linea, this.columna);
                 }
                 if (comparacion) {
-                    var respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break') {
-                            break;
+                    if (!(i instanceof Funcion_1.Funcion)) {
+                        var respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break') {
+                                break;
+                            }
+                            else if (respuesta.type == 'Continue' || respuesta.type == 'Return') {
+                                return respuesta;
+                            }
                         }
-                        else if (respuesta.type == 'Continue' || respuesta.type == 'Return') {
-                            return respuesta;
-                        }
+                    }
+                    else {
+                        throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                     }
                 }
             }
@@ -226,3 +247,30 @@ var EntornoW = /** @class */ (function (_super) {
     return EntornoW;
 }(Instruccion_1.Instruccion));
 exports.EntornoW = EntornoW;
+var EntornoF = /** @class */ (function (_super) {
+    __extends(EntornoF, _super);
+    function EntornoF(instruccines, linea, columna) {
+        var _this = _super.call(this, linea, columna) || this;
+        _this.instruccines = instruccines;
+        return _this;
+    }
+    EntornoF.prototype.ejecutar = function (ambito) {
+        for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
+            var i = _a[_i];
+            try {
+                var respuesta = i.ejecutar(ambito);
+                if (respuesta != null) {
+                    if (respuesta.type == 'Return') {
+                        return respuesta;
+                    }
+                }
+            }
+            catch (error) {
+                parser.Errores.push(error);
+            }
+        }
+        return { type: "Return", value: null, line: this.linea, column: this.columna };
+    };
+    return EntornoF;
+}(Instruccion_1.Instruccion));
+exports.EntornoF = EntornoF;

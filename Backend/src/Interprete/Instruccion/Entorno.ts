@@ -2,6 +2,7 @@ import { ErrorE } from "../Error/Error";
 import { Expresion } from "../Expresion/Expresion";
 import { Relacional } from "../Expresion/Relacional";
 import { Ambito } from "../Extra/Ambito";
+import { Funcion } from "./Funcion";
 import { Instruccion } from "./Instruccion";
 var parser = require('../Grammar/grammar');
 
@@ -11,7 +12,7 @@ export class Entorno extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Pfor",false);
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Pfor", false);
 
         for (let i of this.instruccines) {
             try {
@@ -64,10 +65,14 @@ export class EntornoC extends Instruccion {
         while (ejeCondicion.value) {
             for (let i of this.instruccines) {
                 try {
-                    let respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
-                        else if (respuesta.type == 'Continue') { break; }
+                    if (!(i instanceof Funcion)) {
+                        let respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
+                            else if (respuesta.type == 'Continue') { break; }
+                        }
+                    } else {
+                        throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                     }
                 } catch (error) {
                     parser.Errores.push(error)
@@ -95,10 +100,15 @@ export class EntornoD extends Instruccion {
         do {
             for (let i of this.instruccines) {
                 try {
-                    let respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
-                        else if (respuesta.type == 'Continue') { break; }
+                    if (!(i instanceof Funcion)) {
+                        let respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
+                            else if (respuesta.type == 'Continue') { break; }
+                        }
+                    }
+                    else {
+                        throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                     }
                 } catch (error) {
                     parser.Errores.push(error)
@@ -119,10 +129,15 @@ export class EntornoCase extends Instruccion {
 
         for (let i of this.instruccines) {
             try {
-                let respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
-                    else if (respuesta.type == 'Continue') { return respuesta; }
+                if (!(i instanceof Funcion)) {
+                    let respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Return') { return respuesta }
+                        else if (respuesta.type == 'Continue') { return respuesta; }
+                    }
+                }
+                else {
+                    throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                 }
             } catch (error) {
                 parser.Errores.push(error)
@@ -138,22 +153,49 @@ export class EntornoW extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Switch",false);
+        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Switch", false);
         for (let i of this.instruccines) {
             try {
                 let comparacion;
                 if (i.valor != null) { comparacion = new Relacional(i.valor, this.valor, 0, this.linea, this.columna); }
                 else { comparacion = new Relacional(this.valor, this.valor, 0, this.linea, this.columna); }
                 if (comparacion) {
-                    let respuesta = i.ejecutar(nuevoAmbito);
-                    if (respuesta != null) {
-                        if (respuesta.type == 'Break') { break; }
-                        else if (respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta; }
+                    if (!(i instanceof Funcion)) {
+                        let respuesta = i.ejecutar(nuevoAmbito);
+                        if (respuesta != null) {
+                            if (respuesta.type == 'Break') { break; }
+                            else if (respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta; }
+                        }
+                    }
+                    else {
+                        throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                     }
                 }
             } catch (error) {
                 parser.Errores.push(error)
             }
         }
+    }
+}
+
+export class EntornoF extends Instruccion {
+    constructor(private instruccines: Array<Instruccion>, linea: number, columna: number) {
+        super(linea, columna);
+    }
+
+    public ejecutar(ambito: Ambito) {
+
+        for (let i of this.instruccines) {
+            try {
+                let respuesta = i.ejecutar(ambito);
+                if (respuesta != null) {
+                    if (respuesta.type == 'Return') { return respuesta }
+                }
+            } catch (error) {
+                parser.Errores.push(error)
+            }
+        }
+
+        return {type: "Return", value: null, line: this.linea, column: this.columna}
     }
 }

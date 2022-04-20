@@ -10,6 +10,7 @@ var Ambito = /** @class */ (function () {
         this.nombre = nombre;
         this.marcador = marcador;
         this.variables = new Map();
+        this.funciones = new Map();
     }
     Ambito.prototype.modVal = function (id, valor, tipo, linea, columna) {
         var entorno = this;
@@ -128,6 +129,34 @@ var Ambito = /** @class */ (function () {
             }
             entorno = entorno.anterior;
         }
+    };
+    Ambito.prototype.setFunc = function (nombre, valor, linea, columna) {
+        var entorno = this;
+        while (entorno != null) {
+            if (entorno.funciones.has(nombre.toLocaleLowerCase())) {
+                throw new Error_1.ErrorE(linea, columna, "Semantico", "La funcion ya existe");
+            }
+            entorno = entorno.anterior;
+        }
+        parser.TablaSimbolos.push([this.nombre, nombre.toLocaleLowerCase(), valor, valor.retorno, "Funcion o Metodo"]);
+        this.funciones.set(nombre.toLocaleLowerCase(), valor);
+    };
+    Ambito.prototype.getFunc = function (id) {
+        var entorno = this;
+        while (entorno != null) {
+            if (entorno.funciones.has(id.toLocaleLowerCase())) {
+                return entorno.funciones.get(id.toLocaleLowerCase());
+            }
+            entorno = entorno.anterior;
+        }
+        return null;
+    };
+    Ambito.prototype.getGlobal = function () {
+        var entorno = this;
+        while (entorno.anterior != null) {
+            entorno = entorno.anterior;
+        }
+        return entorno;
     };
     return Ambito;
 }());
