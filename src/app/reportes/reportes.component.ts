@@ -34,7 +34,7 @@ export class ReportesComponent implements OnInit {
         console.log(infoSalida.Codigo)
         if (infoSalida.Codigo) {
           console.log("ejecutar")
-          this.contenidoDiv = '<h2>Realice las correciones de errores Sintacticos para tener el AST adecuado</h2>\n<img src="../../assets/ast.svg"></img>'
+          this.contenidoDiv = '\n<img src="../../assets/ast.svg"></img>'
         }
       },
       err => {

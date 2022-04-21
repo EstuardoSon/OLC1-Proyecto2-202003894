@@ -16,9 +16,14 @@ export class Entorno extends Instruccion {
 
         for (let i of this.instruccines) {
             try {
-                let respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta }
+                if (!(i instanceof Funcion)) {
+                    let respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta }
+                    }
+                }
+                else {
+                    throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                 }
             } catch (error) {
                 parser.Errores.push(error)
@@ -38,10 +43,16 @@ export class EntornoI extends Instruccion {
 
         for (let i of this.instruccines) {
             try {
-                let respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta }
+                if (!(i instanceof Funcion)) {
+                    let respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') { return respuesta }
+                    }
                 }
+                else {
+                    throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
+                }
+
             } catch (error) {
                 parser.Errores.push(error)
             }
@@ -60,9 +71,8 @@ export class EntornoC extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
-
         while (ejeCondicion.value) {
+            let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
             for (let i of this.instruccines) {
                 try {
                     if (!(i instanceof Funcion)) {
@@ -95,9 +105,8 @@ export class EntornoD extends Instruccion {
 
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') { throw new ErrorE(this.linea, this.columna, 'Semantico', `No es posible operar ya que: {${ejeCondicion.value}} no es un dato primitivo booleano`) }
 
-        let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
-
         do {
+            let nuevoAmbito = new Ambito(ambito, ambito.nombre + " - Ciclo", false);
             for (let i of this.instruccines) {
                 try {
                     if (!(i instanceof Funcion)) {
@@ -159,7 +168,8 @@ export class EntornoW extends Instruccion {
                 let comparacion;
                 if (i.valor != null) { comparacion = new Relacional(i.valor, this.valor, 0, this.linea, this.columna); }
                 else { comparacion = new Relacional(this.valor, this.valor, 0, this.linea, this.columna); }
-                if (comparacion) {
+                let condicion = comparacion.ejecutar(ambito);
+                if (condicion.value) {
                     if (!(i instanceof Funcion)) {
                         let respuesta = i.ejecutar(nuevoAmbito);
                         if (respuesta != null) {
@@ -187,15 +197,19 @@ export class EntornoF extends Instruccion {
 
         for (let i of this.instruccines) {
             try {
-                let respuesta = i.ejecutar(ambito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Return') { return respuesta }
+                if (!(i instanceof Funcion)) {
+                    let respuesta = i.ejecutar(ambito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Return') { return respuesta }
+                    }
+                }else {
+                    throw new ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito")
                 }
             } catch (error) {
                 parser.Errores.push(error)
             }
         }
 
-        return {type: "Return", value: null, line: this.linea, column: this.columna}
+        return { type: "Return", value: null, line: this.linea, column: this.columna }
     }
 }

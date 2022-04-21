@@ -73,7 +73,6 @@ export class LlamadoFuncion extends Instruccion{
                         }
                     }
                     else{
-                        console.log(respuesta.value);
                         if(respuesta.value == busqueda.retorno){
                             return { value: null, type: busqueda.retorno}
                         }

@@ -44,7 +44,7 @@ export class EditorComponent implements OnInit {
     this.enviarCodigo();
   }
 
-  generarArchivoBlanco(){
+  generarArchivoBlanco() {
     this.guardar = this.nombreA.nativeElement.value
     this.codigo.nativeElement.value = ""
 
@@ -79,18 +79,22 @@ export class EditorComponent implements OnInit {
   }
 
   enviarCodigo() {
-    let entrada: any = {
-      Codigo: this.codigo.nativeElement.value
-    }
-    this.backend.ejecutar(JSON.parse(JSON.stringify(entrada))).subscribe(
-      res => {
-        console.log(JSON.parse(JSON.stringify(res)))
-        this.verAnalisis();
-      },
-      err => {
-        console.log("Error en la Peticion");
-        console.log(err);
+    if (this.codigo.nativeElement.value != "") {
+      let entrada: any = {
+        Codigo: this.codigo.nativeElement.value
       }
-    )
+      this.backend.ejecutar(JSON.parse(JSON.stringify(entrada))).subscribe(
+        res => {
+          console.log(JSON.parse(JSON.stringify(res)))
+          this.verAnalisis();
+        },
+        err => {
+          console.log("Error en la Peticion");
+          console.log(err);
+        }
+      )
+    }else{
+      alert("La entrada esta vacia");
+    }
   }
 }

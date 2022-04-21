@@ -6,6 +6,8 @@ var tablaS = "<table class='table table-hover'><thead class='thead-dark'><tr><th
 var exec = require('child_process');
 var fs = require('fs');
 const { ErrorE } = require('../src/Interprete/Error/Error');
+const { Declaracion, Inicializacion } = require('../src/Interprete/Instruccion/Declaracion');
+const { MatrizDec1, VectorDec1, InicializacionM, InicializacionV, MatrizDec2, VectorDec2, VectorDec3 } = require('../src/Interprete/Instruccion/ARRAYyMATRIZ');
 var ContenidoEditor = { Codigo: "", Error: "" }
 var Dot = "digraph G{}";
 
@@ -18,7 +20,7 @@ exports.ingresarCodigo = async (req, res) => {
     let ambi = new Ambito(null, "global", false);
     for (i of result) {
         try {
-            if (i instanceof Funcion){
+            if (i instanceof Funcion || i instanceof Declaracion || i instanceof Inicializacion || i instanceof MatrizDec1 || i instanceof MatrizDec2 || i instanceof VectorDec1 || i instanceof VectorDec2 || i instanceof VectorDec3 || i instanceof InicializacionM || i instanceof InicializacionV){
                 i.ejecutar(ambi);
             }
         } catch (error) {
@@ -28,7 +30,7 @@ exports.ingresarCodigo = async (req, res) => {
 
     for (i of result) {
         try {
-            if (!(i instanceof Funcion) && !(i instanceof LlamadoFuncion)){
+            if (!(i instanceof Funcion) && !(i instanceof LlamadoFuncion) && !(i instanceof Declaracion) && !(i instanceof Inicializacion) && !(i instanceof MatrizDec1) && !(i instanceof MatrizDec2) && !(i instanceof VectorDec1) && !(i instanceof VectorDec2) && !(i instanceof VectorDec3) && !(i instanceof InicializacionM) && !(i instanceof InicializacionV)){
                 i.ejecutar(ambi);
             }
             else if(i instanceof LlamadoFuncion){
@@ -79,7 +81,7 @@ exports.ReporteErrores = async (req, res) => {
 
 exports.ReporteAST = async (req, res) => {
     fs.writeFile('../../src/assets/ast.dot', Dot , function(err) {console.log(err)})
-    exec.exec("dot -Tsvg ../../src/assets/ast.dot -o ../../src/assets/ast.svg", (error, stdout, stderr) => { if (error) { res.json({ Codigo: false }); return; } else { res.json({ Codigo: true }); return; } });
+    exec.exec("dot -Tsvg ../../src/assets/ast.dot -o ../../src/assets/ast.svg", (error, stdout, stderr) => { if (error) { console.log("Error"); res.json({ Codigo: false }); return; } else { res.json({ Codigo: true }); return; } });
 }
 
 exports.ReporteSimbolos = async (req, res) => {

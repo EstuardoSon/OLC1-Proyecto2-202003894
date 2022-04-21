@@ -27,7 +27,12 @@ var Print = /** @class */ (function (_super) {
     }
     Print.prototype.ejecutar = function (ambito) {
         var dato = this.valor.ejecutar(ambito);
-        Impresion.Impresion += dato.value.toString();
+        if (dato.value != null) {
+            Impresion.Impresion += dato.value.toString();
+        }
+        else {
+            Impresion.Impresion += "Null";
+        }
     };
     return Print;
 }(Instruccion_1.Instruccion));
@@ -41,7 +46,12 @@ var Println = /** @class */ (function (_super) {
     }
     Println.prototype.ejecutar = function (ambito) {
         var dato = this.valor.ejecutar(ambito);
-        Impresion.Impresion += dato.value.toString() + "\n";
+        if (dato.value != null) {
+            Impresion.Impresion += dato.value.toString() + "\n";
+        }
+        else {
+            Impresion.Impresion += "Null" + "\n";
+        }
     };
     return Println;
 }(Instruccion_1.Instruccion));

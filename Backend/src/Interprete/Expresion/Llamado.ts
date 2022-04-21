@@ -76,3 +76,56 @@ export class LlamadoV extends Expresion {
         }
     }
 }
+
+export class LlamadoFuncionE extends Expresion{
+
+    constructor(public nombre:string, public parametros: Array<Expresion>, fila, columna){
+        super(fila, columna);
+    }
+
+    public ejecutar(ambito: Ambito) {
+        let busqueda = ambito.getFunc(this.nombre)
+
+        if(busqueda != null){
+            if(this.parametros.length == busqueda.parametros.length){
+                const global = ambito.getGlobal()
+                const nuevo = new Ambito(global, `${global.nombre} - funcion(${this.nombre})`, true);
+                
+                for (const i in this.parametros) {
+                    let param = this.parametros[i].ejecutar(ambito)
+                    if(param.type == busqueda.parametros[i].tipo){
+                        nuevo.setVal(busqueda.parametros[i].nombre, param.value,param.type,this.linea,this.columna);
+                    }
+                    else{
+                        throw new ErrorE(this.linea, this.columna, "Semantico", `El valor: ${param.value} no es del tipo adecuado del parametro: ${busqueda.parametros[i].nombre}`)
+                    }
+                }
+
+                let respuesta = busqueda.entorno.ejecutar(nuevo);
+                if (respuesta.type == 'Return') { 
+                    if (respuesta.value != null){
+                        if(respuesta.value.type == busqueda.retorno){
+                            return respuesta.value 
+                        }
+                        else{
+                            throw new ErrorE(this.linea, this.columna, "Semantico", "El retorno de la funcion "+busqueda.nombre+" no coincide con su tipo")
+                        }
+                    }
+                    else{
+                        if(respuesta.value == busqueda.retorno){
+                            return { value: null, type: busqueda.retorno}
+                        }
+                        else{
+                            throw new ErrorE(this.linea, this.columna, "Semantico", "El retorno de la funcion "+busqueda.nombre+" no coincide con su tipo")
+                        }
+                    }
+                }
+            }
+            else{
+                throw new ErrorE(this.linea, this.columna, "Semantico", "La cantidad de parametros enviados a la funcion "+this.nombre+" no es la justa")
+            }
+        }else{
+            throw new ErrorE(this.linea, this.columna, "Semantico", "No existe una funcion con el nombre: "+this.nombre)
+        }
+    }
+}

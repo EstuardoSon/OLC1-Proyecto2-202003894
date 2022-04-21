@@ -15,7 +15,7 @@
     const {Entorno,EntornoI, EntornoC, EntornoD, EntornoCase, EntornoW, EntornoF} = require('../Instruccion/Entorno')
     const {Declaracion, Inicializacion} = require('../Instruccion/Declaracion')
     const {Switch} = require('../Instruccion/Switch')
-    const {Llamado, LlamadoM, LlamadoV} = require('../Expresion/Llamado')
+    const {Llamado, LlamadoM, LlamadoV, LlamadoFuncionE} = require('../Expresion/Llamado')
     const {Print, Println} = require('../Instruccion/Print')
     const {Arbol} = require('../Extra/Arbol')
     Errores = []
@@ -139,8 +139,9 @@ ini
 ;
 
 Instrucciones
-    : TipoInstruccion { arbol.generarInstrucciones(); $$=$1 }
-    | Instrucciones TipoInstruccion { arbol.generarInstrucciones2(); for(let instruccion of $2){ $1.push(instruccion) } $$=$1  }
+    : Instrucciones TipoInstruccion { arbol.generarInstrucciones2(); for(let instruccion of $2){ $1.push(instruccion) } $$=$1  }
+    | TipoInstruccion { arbol.generarInstrucciones(); $$=$1 }
+    
 ;
 
 TipoInstruccion
@@ -154,7 +155,7 @@ TipoInstruccion
     | LlamadoFuncion { arbol.generarTipoInstruccion(); }
     | Run { arbol.generarTipoInstruccion(); }
     | FuncMetod { arbol.generarTipoInstruccion(); }
-    | error PTCOMA { Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado Recouperado con: ;"  )); $$=[] }
+    | error { arbol.generarError(); Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado: "+this.$  )); $$=[] }
 ;
 
 TipoVar
@@ -243,8 +244,8 @@ Valor
     | TOUPPER PARABRE Valor PARCIERRE { arbol.generarValorFuncion("toUpper"); $$ = new TOUpper($3, @1.first_line, @1.first_column) }
     | TYPEOF PARABRE Valor PARCIERRE { arbol.generarValorFuncion("typeOf"); $$ = new TypeOF($3, @1.first_line, @1.first_column) }
     | ROUND PARABRE Valor PARCIERRE { arbol.generarValorFuncion("round"); $$ = new Redondear($3, @1.first_line, @1.first_column) }
-    | IDENTIFICADOR PARABRE PARCIERRE 
-    | IDENTIFICADOR PARABRE ListaValores PARCIERRE 
+    | IDENTIFICADOR PARABRE PARCIERRE { arbol.generarLlamado1V($1); $$ = new LlamadoFuncionE( $1, [], @1.first_line, @1.first_column ) }
+    | IDENTIFICADOR PARABRE ListaValores PARCIERRE { arbol.generarLlamadoV($1); $$ = new LlamadoFuncionE( $1, $3, @1.first_line, @1.first_column ) }
 ;
 
 Print
@@ -300,15 +301,15 @@ Break
     : BREAK PTCOMA { arbol.generarBreak("Break"); $$ = [ new BREAK("Break", @1.first_line, @1.first_column) ] }
     | CONTINUE PTCOMA { arbol.generarBreak("Continue"); $$ = [ new BREAK("Continue", @1.first_line, @1.first_column) ] }
     | RETURN PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN(null, @1.first_line, @1.first_column) ] }
-    | RETURN Valor PTCOMA { arbol.generarBreak("Return"); $$ = [ new RETURN($2, @1.first_line, @1.first_column) ] }
+    | RETURN Valor PTCOMA { arbol.generarBreak1("Return"); $$ = [ new RETURN($2, @1.first_line, @1.first_column) ] }
 ;
 
 FuncMetod
-    : IDENTIFICADOR PARABRE ListaParametros PARCIERRE tipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod($1); $$ = [new Funcion($1, new EntornoF($7, @1.first_line, @1.first_column), $3, $5, @1.first_line, @1.first_column)] }
-    | IDENTIFICADOR PARABRE PARCIERRE tipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod($1); $$ = [new Funcion($1, new EntornoF($6, @1.first_line, @1.first_column), [], $4, @1.first_line, @1.first_column)] }
+    : IDENTIFICADOR PARABRE ListaParametros PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod($1); $$ = [new Funcion($1, new EntornoF($7, @1.first_line, @1.first_column), $3, $5, @1.first_line, @1.first_column)] }
+    | IDENTIFICADOR PARABRE PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE { arbol.generarFuncMetod1($1); $$ = [new Funcion($1, new EntornoF($6, @1.first_line, @1.first_column), [], $4, @1.first_line, @1.first_column)] }
 ;
 
-tipoFunc
+TipoFunc
     : DOSPT TipoVar { arbol.generarTipoFunc(); $$ = $2 }
     | DOSPT VOID { arbol.generarTipoFunc1(); $$ = null }
     | { arbol.generarTipoFunc2(); $$ = null}

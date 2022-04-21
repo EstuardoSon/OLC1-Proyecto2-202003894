@@ -97,7 +97,6 @@ var LlamadoFuncion = /** @class */ (function (_super) {
                         }
                     }
                     else {
-                        console.log(respuesta.value);
                         if (respuesta.value == busqueda.retorno) {
                             return { value: null, type: busqueda.retorno };
                         }

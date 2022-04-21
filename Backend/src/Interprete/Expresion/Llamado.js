@@ -15,8 +15,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-exports.LlamadoV = exports.LlamadoM = exports.Llamado = void 0;
+exports.LlamadoFuncionE = exports.LlamadoV = exports.LlamadoM = exports.Llamado = void 0;
 var Error_1 = require("../Error/Error");
+var Ambito_1 = require("../Extra/Ambito");
 var Expresion_1 = require("./Expresion");
 var Llamado = /** @class */ (function (_super) {
     __extends(Llamado, _super);
@@ -108,3 +109,57 @@ var LlamadoV = /** @class */ (function (_super) {
     return LlamadoV;
 }(Expresion_1.Expresion));
 exports.LlamadoV = LlamadoV;
+var LlamadoFuncionE = /** @class */ (function (_super) {
+    __extends(LlamadoFuncionE, _super);
+    function LlamadoFuncionE(nombre, parametros, fila, columna) {
+        var _this = _super.call(this, fila, columna) || this;
+        _this.nombre = nombre;
+        _this.parametros = parametros;
+        return _this;
+    }
+    LlamadoFuncionE.prototype.ejecutar = function (ambito) {
+        var busqueda = ambito.getFunc(this.nombre);
+        if (busqueda != null) {
+            if (this.parametros.length == busqueda.parametros.length) {
+                var global_1 = ambito.getGlobal();
+                var nuevo = new Ambito_1.Ambito(global_1, "".concat(global_1.nombre, " - funcion(").concat(this.nombre, ")"), true);
+                for (var i in this.parametros) {
+                    var param = this.parametros[i].ejecutar(ambito);
+                    if (param.type == busqueda.parametros[i].tipo) {
+                        nuevo.setVal(busqueda.parametros[i].nombre, param.value, param.type, this.linea, this.columna);
+                    }
+                    else {
+                        throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "El valor: ".concat(param.value, " no es del tipo adecuado del parametro: ").concat(busqueda.parametros[i].nombre));
+                    }
+                }
+                var respuesta = busqueda.entorno.ejecutar(nuevo);
+                if (respuesta.type == 'Return') {
+                    if (respuesta.value != null) {
+                        if (respuesta.value.type == busqueda.retorno) {
+                            return respuesta.value;
+                        }
+                        else {
+                            throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "El retorno de la funcion " + busqueda.nombre + " no coincide con su tipo");
+                        }
+                    }
+                    else {
+                        if (respuesta.value == busqueda.retorno) {
+                            return { value: null, type: busqueda.retorno };
+                        }
+                        else {
+                            throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "El retorno de la funcion " + busqueda.nombre + " no coincide con su tipo");
+                        }
+                    }
+                }
+            }
+            else {
+                throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "La cantidad de parametros enviados a la funcion " + this.nombre + " no es la justa");
+            }
+        }
+        else {
+            throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No existe una funcion con el nombre: " + this.nombre);
+        }
+    };
+    return LlamadoFuncionE;
+}(Expresion_1.Expresion));
+exports.LlamadoFuncionE = LlamadoFuncionE;

@@ -1,3 +1,4 @@
+import { ErrorE } from "../Error/Error";
 import { Expresion } from "../Expresion/Expresion";
 import { Ambito } from "../Extra/Ambito";
 import { Instruccion } from "../Instruccion/Instruccion";
@@ -10,7 +11,11 @@ export class Print extends Instruccion {
 
     public ejecutar(ambito: Ambito) {
             let dato = this.valor.ejecutar(ambito)
-            Impresion.Impresion += dato.value.toString()
+            if(dato.value!=null){
+                Impresion.Impresion += dato.value.toString()
+            }else{
+                Impresion.Impresion += "Null"
+            }
     }
 }
 
@@ -20,7 +25,11 @@ export class Println extends Instruccion {
     }
 
     public ejecutar(ambito: Ambito) {
-            let dato = this.valor.ejecutar(ambito)
+        let dato = this.valor.ejecutar(ambito)
+        if(dato.value!=null){
             Impresion.Impresion += dato.value.toString()+"\n"
+        }else{
+            Impresion.Impresion += "Null"+"\n"
+        }
     }
 }

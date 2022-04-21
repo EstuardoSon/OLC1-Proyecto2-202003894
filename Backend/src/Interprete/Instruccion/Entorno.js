@@ -34,11 +34,16 @@ var Entorno = /** @class */ (function (_super) {
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
-                var respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') {
-                        return respuesta;
+                if (!(i instanceof Funcion_1.Funcion)) {
+                    var respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') {
+                            return respuesta;
+                        }
                     }
+                }
+                else {
+                    throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                 }
             }
             catch (error) {
@@ -61,11 +66,16 @@ var EntornoI = /** @class */ (function (_super) {
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
-                var respuesta = i.ejecutar(nuevoAmbito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') {
-                        return respuesta;
+                if (!(i instanceof Funcion_1.Funcion)) {
+                    var respuesta = i.ejecutar(nuevoAmbito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Break' || respuesta.type == 'Continue' || respuesta.type == 'Return') {
+                            return respuesta;
+                        }
                     }
+                }
+                else {
+                    throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                 }
             }
             catch (error) {
@@ -90,8 +100,8 @@ var EntornoC = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
         while (ejeCondicion.value) {
+            var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
                 try {
@@ -136,8 +146,8 @@ var EntornoD = /** @class */ (function (_super) {
         if (ejeCondicion.type != 2 || typeof (ejeCondicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que: {".concat(ejeCondicion.value, "} no es un dato primitivo booleano"));
         }
-        var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
         do {
+            var nuevoAmbito = new Ambito_1.Ambito(ambito, ambito.nombre + " - Ciclo", false);
             for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
                 var i = _a[_i];
                 try {
@@ -222,7 +232,8 @@ var EntornoW = /** @class */ (function (_super) {
                 else {
                     comparacion = new Relacional_1.Relacional(this.valor, this.valor, 0, this.linea, this.columna);
                 }
-                if (comparacion) {
+                var condicion = comparacion.ejecutar(ambito);
+                if (condicion.value) {
                     if (!(i instanceof Funcion_1.Funcion)) {
                         var respuesta = i.ejecutar(nuevoAmbito);
                         if (respuesta != null) {
@@ -258,11 +269,16 @@ var EntornoF = /** @class */ (function (_super) {
         for (var _i = 0, _a = this.instruccines; _i < _a.length; _i++) {
             var i = _a[_i];
             try {
-                var respuesta = i.ejecutar(ambito);
-                if (respuesta != null) {
-                    if (respuesta.type == 'Return') {
-                        return respuesta;
+                if (!(i instanceof Funcion_1.Funcion)) {
+                    var respuesta = i.ejecutar(ambito);
+                    if (respuesta != null) {
+                        if (respuesta.type == 'Return') {
+                            return respuesta;
+                        }
                     }
+                }
+                else {
+                    throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "No se permite la creacion de funciones en este ambito");
                 }
             }
             catch (error) {
