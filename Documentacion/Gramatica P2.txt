@@ -1,0 +1,311 @@
+\s+ //expresion para omitir Saltos de Linea o espacios
+\/\/[^\n]* //Expresion para omitir Comentarios de una Linea
+\/\*[^\*]*[\*]+([^/\*][^\*]*(\*)+)*\/ //Expresion para omitir Comentarios Multilinea
+
+La gramatica es Case insensitive por lo que no importaran mayusculas o minusculas al reconocer tokens
+
+//PALABRAS RESERVADAS
+
+"void" Devuelve el token 'VOID'
+"int" Devuelve el token 'INT';
+"double" Devuelve el token 'DOUBLE';
+"boolean" Devuelve el token 'BOOLEAN';
+"switch" Devuelve el token 'SWITCH';
+"case" Devuelve el token 'CASE';
+"if" Devuelve el token 'IF';
+"else" Devuelve el token 'ELSE';
+"char" Devuelve el token 'CHAR';
+"string" Devuelve el token 'STRING';
+"true" Devuelve el token 'TRUE';
+"false" Devuelve el token 'FALSE';
+"break" Devuelve el token 'BREAK';
+"continue" Devuelve el token 'CONTINUE';
+"default" Devuelve el token 'DEFAULT';
+"return" Devuelve el token 'RETURN';
+"do" Devuelve el token 'DO';
+"while" Devuelve el token 'WHILE';
+"for" Devuelve el token 'FOR';
+"println" Devuelve el token 'PRINTLN';
+"print" Devuelve el token 'PRINT';
+"tolower" Devuelve el token 'TOLOWER';
+"toupper" Devuelve el token 'TOUPPER';
+"round" Devuelve el token 'ROUND';
+"length" Devuelve el token 'LENGTH';
+"typeof" Devuelve el token 'TYPEOF';
+"tostring" Devuelve el token 'TOSTRING';
+"tochararray" Devuelve el token 'TOCHARARRAY';
+"run" Devuelve el token 'RUN';
+"new" Devuelve el token 'NEW';
+
+//EXPRESIONES
+
+//Expresion para reconocer numeros Identificadores o ID
+(_)*[a-zA-ZnÑ]+[_a-zA-Z0-9ñÑ]*\b Devuelve el token 'IDENTIFICADOR';
+
+//Expresion para reconocer Cadenas de Texto
+\"(\\n|\\\"|\\\'|\\t|\\\\|\\r|[^\"\\\n])*\"  Devuelve el token 'CADENA' 
+
+//Expresion para reconocer numeros Decimales
+[0-9]+(\.[0-9]+)\b Devuelve el token 'DECIMAL'
+
+//Expresion para reconocer numeros Enteros
+[0-9]+\b Devuelve el token 'ENTERO'
+
+//Expresion para reconocer Caracteres Char
+\'(\\n|\\\"|\\\'|\\t|\\\\|\\r|[^\'\\\n])\' Devuelve el token 'CARACTER'
+
+
+//SIMBOLOS
+"++" Devuelve el token 'INCREMENTO';
+"--" Devuelve el token 'DECREMENTO';
+"+" Devuelve el token 'SUMA';
+"-" Devuelve el token 'RESTA';
+"/" Devuelve el token 'DIVISION';
+"^" Devuelve el token 'POTENCIA';
+"*" Devuelve el token 'MULTIPLICACION';
+"%" Devuelve el token 'MODULO';
+"==" Devuelve el token 'IGUAL';
+"=" Devuelve el token 'ASIGNACION';
+"!=" Devuelve el token 'DIFERENTE';
+"!" Devuelve el token 'NEGACION';
+"<=" Devuelve el token 'MENORIGUAL';
+"<" Devuelve el token 'MENOR'
+">=" Devuelve el token 'MAYORIGUAL';
+">" Devuelve el token 'MAYOR';
+"(" Devuelve el token 'PARABRE';
+")" Devuelve el token 'PARCIERRE';
+"[" Devuelve el token 'CORCHETEABRE';
+"]" Devuelve el token 'CORCHETECIERRE';
+"{" Devuelve el token 'LLAVEABRE';
+"}" Devuelve el token 'LLAVECIERRE';
+";" Devuelve el token 'PTCOMA';
+":" Devuelve el token 'DOSPT';
+"," Devuelve el token 'COMA';
+"&&" Devuelve el token 'AND';
+"||" Devuelve el token 'OR';
+"?" Devuelve el token 'TERNARIO';
+
+<<EOF>> Devuelve el token 'EOF';
+. //Cualquier otro caracter que no sea parte del lenguaje se considera un error lexico
+
+
+
+*Presedencia y Asociatividad del menor al mayor
+
+derecha 'TERNARIO' //operador ternario
+izquierda 'OR'
+izquierda 'AND'
+derecha 'NEGACION'
+izquierda 'IGUAL' 'DIFERENTE' 'MENORIGUAL' 'MENOR' 'MAYORIGUAL' 'MAYOR' 
+izquierda 'SUMA' 'RESTA'
+izquierda 'DIVISION' 'MULTIPLICACION' 'MODULO'
+no asociativa 'POTENCIA'
+no asociativa 'DECREMENTO' 'INCREMENTO'
+derecha CAST1 //Casteos
+derecha UMINUS //Resta Unitaria
+
+
+Produccion Inicial: ini
+
+
+ini //Produccion Inicial
+    :Instrucciones EOF
+;
+
+-- Al finalizar la produccion ini esta retornara un Array de Instrucciones --
+
+Instrucciones //Produccion para generar una Lista de Instrucciones
+    : TipoInstruccion 
+    | Instrucciones TipoInstruccion 
+;
+
+-- Al finalizar Instrucciones retorna una lista de instrucciones que se forma a lo largo de su ejecuccion  --
+
+TipoInstruccion //Prorduccion para Reconocer el tipo de Instruccion
+    : Declaraciones
+    | Inicializacion PTCOMA 
+    | Print 
+    | If 
+    | Ciclo 
+    | Break 
+    | Switch
+    | LlamadoFuncion
+    | Run 
+    | FuncMetod 
+    | error PTCOMA //Recuperacion con punto y coma
+;
+
+-- Al finalizar  -- 
+
+TipoVar // Produccion para reconocer el tipo de dato
+    : INT 
+    | DOUBLE 
+    | BOOLEAN 
+    | CHAR 
+    | STRING 
+;
+
+Declaraciones //Produccion para realizar los diversos tipos 
+    : TipoVar Variables 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaVectores CORCHETECIERRE PTCOMA 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE PTCOMA
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION CORCHETEABRE ListaValores CORCHETECIERRE PTCOMA 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION NEW TipoVar CORCHETEABRE Valor CORCHETECIERRE PTCOMA 
+    | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION TOCHARARRAY PARABRE Valor PARCIERRE PTCOMA 
+;
+
+ListaValores //Produccion para generar una lista de valores
+    : ListaValores COMA Valor 
+    | Valor 
+;
+
+ListaVectores //Produccion para generar una matriz
+    : ListaVectores COMA CORCHETEABRE ListaValores CORCHETECIERRE 
+    | CORCHETEABRE ListaValores CORCHETECIERRE 
+;
+
+Inicializacion //Produccion para generar las inicializaciones de variables
+    : IDENTIFICADOR INCREMENTO 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE INCREMENTO  
+    | IDENTIFICADOR DECREMENTO 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE DECREMENTO 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE DECREMENTO 
+    | IDENTIFICADOR ASIGNACION Valor 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor 
+;
+
+Variables // Produccion para declarar variables primitivas
+    : Variables2 ASIGNACION Valor PTCOMA 
+    | Variables2 PTCOMA 
+;
+
+Variables2 // Produccion para generar una lista de identificadores
+    : Variables2 COMA IDENTIFICADOR 
+    | IDENTIFICADOR 
+;
+
+Valor //Produccion para generar todas las operaciones algebraicas o relacionales
+    : RESTA Valor
+    | Valor POTENCIA Valor
+    | Valor MULTIPLICACION Valor 
+    | Valor DIVISION Valor 
+    | Valor SUMA Valor 
+    | Valor RESTA Valor 
+    | Valor MODULO Valor 
+    | Valor IGUAL Valor 
+    | Valor DIFERENTE Valor 
+    | Valor MENOR Valor 
+    | Valor MENORIGUAL Valor 
+    | Valor MAYOR Valor 
+    | Valor MAYORIGUAL Valor 
+    | Valor OR Valor 
+    | Valor AND Valor 
+    | Valor INCREMENTO 
+    | Valor DECREMENTO 
+    | Valor TERNARIO Valor DOSPT Valor 
+    | NEGACION Valor 
+    | PARABRE Valor PARCIERRE 
+    | ENTERO 
+    | DECIMAL 
+    | CADENA 
+    | CARACTER 
+    | TRUE 
+    | FALSE 
+    | IDENTIFICADOR 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE 
+    | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE 
+    | PARABRE TipoVar PARCIERRE Valor %prec CAST1
+    | TOSTRING PARABRE Valor PARCIERRE
+    | LENGTH PARABRE Valor PARCIERRE
+    | TOLOWER PARABRE Valor PARCIERRE
+    | TOUPPER PARABRE Valor PARCIERRE 
+    | TYPEOF PARABRE Valor PARCIERRE 
+    | ROUND PARABRE Valor PARCIERRE 
+    | IDENTIFICADOR PARABRE PARCIERRE
+    | IDENTIFICADOR PARABRE ListaValores PARCIERRE 
+;
+
+
+Print //Produccion para el reconocimiento de la funcion Print
+    : PRINT PARABRE Valor PARCIERRE PTCOMA 
+    | PRINT PARABRE PARCIERRE PTCOMA 
+    | PRINTLN PARABRE Valor PARCIERRE PTCOMA 
+    | PRINTLN PARABRE PARCIERRE PTCOMA 
+;
+
+If //Produccion para el reconocimiento de la estructura de control IF
+    : IF PARABRE Valor PARCIERRE Entorno Else 
+;
+
+Else //Produccion para el reconocimiento de la estructura de control ELSE/ElSE IF
+    : ELSE Entorno 
+    | ELSE If 
+    | Epsilon
+;
+
+Ciclo //Produccion para el reconocimiento de la estructura FOR/WHILE/DO WHILE
+    : FOR PARABRE Param1 Valor PTCOMA Inicializacion PARCIERRE Entorno 
+    | WHILE PARABRE Valor PARCIERRE Entorno
+    | DO Entorno WHILE PARABRE Valor PARCIERRE PTCOMA
+;
+
+Param1 //Produccion para reconocer el primer parametro del ciclo for
+    : Declaraciones 
+    | Inicializacion PTCOMA 
+;
+
+Switch //Produccion para reconocer la estructura de control SWITCH
+    : SWITCH PARABRE Valor PARCIERRE LLAVEABRE EntornoS LLAVECIERRE 
+;
+
+EntornoS //Produccion para reconocer el entorno de trabajo de la estructura SWITCH
+    : Casos DEFAULT DOSPT Instrucciones 
+    | Casos 
+    | DEFAULT DOSPT Instrucciones 
+    | DEFAULT DOSPT 
+;
+
+
+Casos //Produccion para reconocer los Cases de un Switch
+    : CASE Valor DOSPT Instrucciones
+    | Casos CASE Valor DOSPT Instrucciones
+;
+
+Entorno //Produccion para reconocer datos entre llaves
+    : LLAVEABRE Instrucciones LLAVECIERRE 
+    | LLAVEABRE LLAVECIERRE 
+;
+
+Break //Produccion para reconocer las instrucciones BREAK/ CONTINUE/ RETURN
+    : BREAK PTCOMA 
+    | CONTINUE PTCOMA 
+    | RETURN PTCOMA 
+    | RETURN Valor PTCOMA 
+;
+
+FuncMetod //Prouccion para reconocer las funciones y metodos
+    : IDENTIFICADOR PARABRE ListaParametros PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE 
+    | IDENTIFICADOR PARABRE PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE 
+;
+
+TipoFunc //Produccion para reconocer el tipo de dato que retorna una funcion o metodo
+    : DOSPT TipoVar 
+    | DOSPT VOID 
+    | Epsilon
+;
+
+ListaParametros //Produccion para reconocer la lista de parametros
+    : ListaParametros COMA TipoVar IDENTIFICADOR 
+    | TipoVar IDENTIFICADOR 
+;
+
+Run //Produccion para reconocer las operaciones Run
+    : RUN LlamadoFuncion 
+;
+
+LlamadoFuncion //Produccion para reconocer 
+    : IDENTIFICADOR PARABRE ListaValores PARCIERRE PTCOMA 
+    | IDENTIFICADOR PARABRE PARCIERRE PTCOMA 
+;

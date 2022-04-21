@@ -155,7 +155,7 @@ TipoInstruccion
     | LlamadoFuncion { arbol.generarTipoInstruccion(); }
     | Run { arbol.generarTipoInstruccion(); }
     | FuncMetod { arbol.generarTipoInstruccion(); }
-    | error { arbol.generarError(); Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado: "+this.$  )); $$=[] }
+    | error PTCOMA { arbol.generarError(); Errores.push(new ErrorE(this._$.first_line, this._$.first_column,'Sintactico', "Error Sintactico token inesperado recuperado con ;"  )); $$=[] }
 ;
 
 TipoVar
