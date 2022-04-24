@@ -29,29 +29,26 @@ var Ternario = /** @class */ (function (_super) {
     }
     Ternario.prototype.ejecutar = function (ambito) {
         var condicion = this.condicion.ejecutar(ambito);
-        var valor1 = this.valor1.ejecutar(ambito);
-        var valor2 = this.valor2.ejecutar(ambito);
         if (typeof (condicion.value) == 'object') {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(condicion.value, " no es un dato primitivo"));
         }
-        if (typeof (valor1.value) == 'object') {
-            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor1.value, " no es un dato primitivo"));
-        }
-        if (typeof (valor2.value) == 'object') {
-            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor2.value, " no es un dato primitivo"));
-        }
-        if (valor1.type == valor2.type) {
-            if (condicion.type == 2) {
-                if (condicion.value) {
-                    return { value: valor1.value, type: valor1.type };
+        if (condicion.type == 2) {
+            if (condicion.value) {
+                var valor1 = this.valor1.ejecutar(ambito);
+                if (typeof (valor1.value) == 'object') {
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor1.value, " no es un dato primitivo"));
                 }
-                else {
-                    return { value: valor2.value, type: valor2.type };
-                }
+                return { value: valor1.value, type: valor1.type };
             }
-            throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', ' La condicion no retorna un valor Booleano');
+            else {
+                var valor2 = this.valor2.ejecutar(ambito);
+                if (typeof (valor2.value) == 'object') {
+                    throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', "No es posible operar ya que ".concat(valor2.value, " no es un dato primitivo"));
+                }
+                return { value: valor2.value, type: valor2.type };
+            }
         }
-        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', ' Los resultados de la operacion ternaria no tienen tipos iguales');
+        throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', ' La condicion no retorna un valor Booleano');
     };
     return Ternario;
 }(Expresion_1.Expresion));

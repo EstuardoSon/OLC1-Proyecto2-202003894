@@ -20,7 +20,17 @@ exports.ingresarCodigo = async (req, res) => {
     let ambi = new Ambito(null, "global", false);
     for (i of result) {
         try {
-            if (i instanceof Funcion || i instanceof Declaracion || i instanceof Inicializacion || i instanceof MatrizDec1 || i instanceof MatrizDec2 || i instanceof VectorDec1 || i instanceof VectorDec2 || i instanceof VectorDec3 || i instanceof InicializacionM || i instanceof InicializacionV){
+            if (i instanceof Funcion){
+                i.ejecutar(ambi);
+            }
+        } catch (error) {
+            parser.Errores.push(error)
+        }
+    }
+
+    for (i of result) {
+        try {
+            if (i instanceof Declaracion || i instanceof Inicializacion || i instanceof MatrizDec1 || i instanceof MatrizDec2 || i instanceof VectorDec1 || i instanceof VectorDec2 || i instanceof VectorDec3 || i instanceof InicializacionM || i instanceof InicializacionV){
                 i.ejecutar(ambi);
             }
         } catch (error) {

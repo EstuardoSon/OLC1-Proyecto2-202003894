@@ -135,7 +135,7 @@ TipoInstruccion //Prorduccion para Reconocer el tipo de Instruccion
     | error PTCOMA //Recuperacion con punto y coma
 ;
 
--- Al finalizar  -- 
+-- Al finalizar Tipo Instruccion devuelve un arreglo con una sola instruccion que servira como base para la lista de Instrucciones -- 
 
 TipoVar // Produccion para reconocer el tipo de dato
     : INT 
@@ -144,6 +144,8 @@ TipoVar // Produccion para reconocer el tipo de dato
     | CHAR 
     | STRING 
 ;
+
+-- Al finalizar TipoVar retorna un numero del 0 al 4 que indica que tipo de dato se trata --
 
 Declaraciones //Produccion para realizar los diversos tipos 
     : TipoVar Variables 
@@ -154,15 +156,21 @@ Declaraciones //Produccion para realizar los diversos tipos
     | TipoVar IDENTIFICADOR CORCHETEABRE CORCHETECIERRE ASIGNACION TOCHARARRAY PARABRE Valor PARCIERRE PTCOMA 
 ;
 
+-- Al finalizar Declaraciones retorna un Array con una o varias instrucciones de tipo Declaracion --
+
 ListaValores //Produccion para generar una lista de valores
     : ListaValores COMA Valor 
     | Valor 
 ;
 
+-- Al finalizar ListaValores retornara un Array de objetos de tipo Expresion --
+
 ListaVectores //Produccion para generar una matriz
     : ListaVectores COMA CORCHETEABRE ListaValores CORCHETECIERRE 
     | CORCHETEABRE ListaValores CORCHETECIERRE 
 ;
+
+-- Al finalizar ListaVectores retornara un Array de Array que contienen objetos de tipo Expresion --
 
 Inicializacion //Produccion para generar las inicializaciones de variables
     : IDENTIFICADOR INCREMENTO 
@@ -176,15 +184,21 @@ Inicializacion //Produccion para generar las inicializaciones de variables
     | IDENTIFICADOR CORCHETEABRE Valor CORCHETECIERRE CORCHETEABRE Valor CORCHETECIERRE ASIGNACION Valor 
 ;
 
+-- Al finalizar Inicializacion devuelve un Array con un solo objeto de tipo Inicializacion --
+
 Variables // Produccion para declarar variables primitivas
     : Variables2 ASIGNACION Valor PTCOMA 
     | Variables2 PTCOMA 
 ;
 
+-- Al finalizar Variables devuelve uno o varios objetos de tipo Variables con valores asignados --
+
 Variables2 // Produccion para generar una lista de identificadores
     : Variables2 COMA IDENTIFICADOR 
     | IDENTIFICADOR 
 ;
+
+-- Al finalizar Variables2 devuelve uno o varios objetos de tipo Variables --
 
 Valor //Produccion para generar todas las operaciones algebraicas o relacionales
     : RESTA Valor
@@ -227,6 +241,7 @@ Valor //Produccion para generar todas las operaciones algebraicas o relacionales
     | IDENTIFICADOR PARABRE ListaValores PARCIERRE 
 ;
 
+-- Al finalizar Valor devuelve uno objeto que hereda sus atributos del tipo Expresion --
 
 Print //Produccion para el reconocimiento de la funcion Print
     : PRINT PARABRE Valor PARCIERRE PTCOMA 
@@ -235,9 +250,13 @@ Print //Produccion para el reconocimiento de la funcion Print
     | PRINTLN PARABRE PARCIERRE PTCOMA 
 ;
 
+-- Al finalizar Print devuelve uno objeto de tipo Print--
+
 If //Produccion para el reconocimiento de la estructura de control IF
     : IF PARABRE Valor PARCIERRE Entorno Else 
 ;
+
+-- Al finalizar Print devuelve uno objeto de tipo If --
 
 Else //Produccion para el reconocimiento de la estructura de control ELSE/ElSE IF
     : ELSE Entorno 
@@ -245,20 +264,28 @@ Else //Produccion para el reconocimiento de la estructura de control ELSE/ElSE I
     | Epsilon
 ;
 
+-- Al finalizar Print devuelve uno objeto de tipo Else --
+
 Ciclo //Produccion para el reconocimiento de la estructura FOR/WHILE/DO WHILE
     : FOR PARABRE Param1 Valor PTCOMA Inicializacion PARCIERRE Entorno 
     | WHILE PARABRE Valor PARCIERRE Entorno
     | DO Entorno WHILE PARABRE Valor PARCIERRE PTCOMA
 ;
 
+-- Al finalizar Print devuelve uno objeto de tipo Ciclo --
+
 Param1 //Produccion para reconocer el primer parametro del ciclo for
     : Declaraciones 
     | Inicializacion PTCOMA 
 ;
 
+-- Al finalizar Print devuelve uno objeto de tipo Param1 --
+
 Switch //Produccion para reconocer la estructura de control SWITCH
     : SWITCH PARABRE Valor PARCIERRE LLAVEABRE EntornoS LLAVECIERRE 
 ;
+
+-- Al finalizar Print devuelve uno objeto de tipo Switch --
 
 EntornoS //Produccion para reconocer el entorno de trabajo de la estructura SWITCH
     : Casos DEFAULT DOSPT Instrucciones 
@@ -267,16 +294,21 @@ EntornoS //Produccion para reconocer el entorno de trabajo de la estructura SWIT
     | DEFAULT DOSPT 
 ;
 
+-- Al finalizar EntronoS devuelve uno objeto de tipo EntornoS --
 
 Casos //Produccion para reconocer los Cases de un Switch
     : CASE Valor DOSPT Instrucciones
     | Casos CASE Valor DOSPT Instrucciones
 ;
 
+-- Al finalizar Casos devuelve un Array  objeto de tipo EntornoCase --
+
 Entorno //Produccion para reconocer datos entre llaves
     : LLAVEABRE Instrucciones LLAVECIERRE 
     | LLAVEABRE LLAVECIERRE 
 ;
+
+-- Al finalizar Entorno devuelve un objeto de tipo Entorno --
 
 Break //Produccion para reconocer las instrucciones BREAK/ CONTINUE/ RETURN
     : BREAK PTCOMA 
@@ -285,10 +317,14 @@ Break //Produccion para reconocer las instrucciones BREAK/ CONTINUE/ RETURN
     | RETURN Valor PTCOMA 
 ;
 
+-- Al finalizar Break devuelve un objeto de tipo Break --
+
 FuncMetod //Prouccion para reconocer las funciones y metodos
     : IDENTIFICADOR PARABRE ListaParametros PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE 
     | IDENTIFICADOR PARABRE PARCIERRE TipoFunc LLAVEABRE Instrucciones LLAVECIERRE 
 ;
+
+-- Al finalizar FuncMetod devuelve un objeto de tipo FuncMetod --
 
 TipoFunc //Produccion para reconocer el tipo de dato que retorna una funcion o metodo
     : DOSPT TipoVar 
@@ -296,16 +332,24 @@ TipoFunc //Produccion para reconocer el tipo de dato que retorna una funcion o m
     | Epsilon
 ;
 
+-- Al finalizar TipoFunc devuelve un objeto de tipo TipoFunc --
+
 ListaParametros //Produccion para reconocer la lista de parametros
     : ListaParametros COMA TipoVar IDENTIFICADOR 
     | TipoVar IDENTIFICADOR 
 ;
 
+-- Al finalizar ListaParametros devuelve un Array de diccionarios con los indices nombre y tipo --
+
 Run //Produccion para reconocer las operaciones Run
     : RUN LlamadoFuncion 
 ;
+
+-- Al finalizar Run devuelve un objeto Run --
 
 LlamadoFuncion //Produccion para reconocer 
     : IDENTIFICADOR PARABRE ListaValores PARCIERRE PTCOMA 
     | IDENTIFICADOR PARABRE PARCIERRE PTCOMA 
 ;
+
+-- Al finalizar LlamadoFuncion devuelve objeto LlamadoFuncion --
