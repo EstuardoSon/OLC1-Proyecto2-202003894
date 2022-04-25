@@ -20,7 +20,7 @@ exports.ingresarCodigo = async (req, res) => {
     let ambi = new Ambito(null, "global", false);
     for (i of result) {
         try {
-            if (i instanceof Funcion){
+            if (i instanceof Funcion) {
                 i.ejecutar(ambi);
             }
         } catch (error) {
@@ -30,7 +30,7 @@ exports.ingresarCodigo = async (req, res) => {
 
     for (i of result) {
         try {
-            if (i instanceof Declaracion || i instanceof Inicializacion || i instanceof MatrizDec1 || i instanceof MatrizDec2 || i instanceof VectorDec1 || i instanceof VectorDec2 || i instanceof VectorDec3 || i instanceof InicializacionM || i instanceof InicializacionV){
+            if (i instanceof Declaracion || i instanceof Inicializacion || i instanceof MatrizDec1 || i instanceof MatrizDec2 || i instanceof VectorDec1 || i instanceof VectorDec2 || i instanceof VectorDec3 || i instanceof InicializacionM || i instanceof InicializacionV) {
                 i.ejecutar(ambi);
             }
         } catch (error) {
@@ -40,10 +40,10 @@ exports.ingresarCodigo = async (req, res) => {
 
     for (i of result) {
         try {
-            if (!(i instanceof Funcion) && !(i instanceof LlamadoFuncion) && !(i instanceof Declaracion) && !(i instanceof Inicializacion) && !(i instanceof MatrizDec1) && !(i instanceof MatrizDec2) && !(i instanceof VectorDec1) && !(i instanceof VectorDec2) && !(i instanceof VectorDec3) && !(i instanceof InicializacionM) && !(i instanceof InicializacionV)){
+            if (!(i instanceof Funcion) && !(i instanceof LlamadoFuncion) && !(i instanceof Declaracion) && !(i instanceof Inicializacion) && !(i instanceof MatrizDec1) && !(i instanceof MatrizDec2) && !(i instanceof VectorDec1) && !(i instanceof VectorDec2) && !(i instanceof VectorDec3) && !(i instanceof InicializacionM) && !(i instanceof InicializacionV)) {
                 i.ejecutar(ambi);
             }
-            else if(i instanceof LlamadoFuncion){
+            else if (i instanceof LlamadoFuncion) {
                 throw new ErrorE(i.linea, i.columna, "Semantico", "No es posible ejecutar la instruccion");
             }
         } catch (error) {
@@ -56,7 +56,28 @@ exports.ingresarCodigo = async (req, res) => {
 
     tablaS = "<table class='table table-hover'><thead class='thead-dark'><tr><th>Entorno</th><th>Nombre</th><th>Valor</th><th>Tipo Dato</th><th>Tipo Variable</th></tr></thead>";
     for (let i of parser.TablaSimbolos) {
-        tablaS += `<tr><td>${i[0]}</td><td>${i[1]}</td><td>${i[2]}</td><td>${i[3]}</td><td>${i[4]}</td></tr>`;
+        let tipodato = "";
+        switch (i[3]) {
+            case 0:
+                tipodato = "INT";
+                break;
+            case 1:
+                tipodato = "DOUBLE";
+                break;
+            case 2:
+                tipodato = "BOOLEAN";
+                break;
+            case 3:
+                tipodato = "CHAR";
+                break;
+            case 4:
+                tipodato = "STRING";
+                break;
+            default:
+                tipodato = "VOID";
+                break;
+        }
+        tablaS += `<tr><td>${i[0]}</td><td>${i[1]}</td><td>${i[2]}</td><td>${tipodato}</td><td>${i[4]}</td></tr>`;
     }
     tablaS += "</table>";
 
@@ -90,7 +111,7 @@ exports.ReporteErrores = async (req, res) => {
 }
 
 exports.ReporteAST = async (req, res) => {
-    fs.writeFile('../../src/assets/ast.dot', Dot , function(err) {console.log(err)})
+    fs.writeFile('../../src/assets/ast.dot', Dot, function (err) { console.log(err) })
     exec.exec("dot -Tsvg ../../src/assets/ast.dot -o ../../src/assets/ast.svg", (error, stdout, stderr) => { if (error) { console.log("Error"); res.json({ Codigo: false }); return; } else { res.json({ Codigo: true }); return; } });
 }
 

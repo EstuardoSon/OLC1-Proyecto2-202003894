@@ -34,6 +34,7 @@ var Ambito = /** @class */ (function () {
         }
     };
     Ambito.prototype.setVal = function (id, valor, tipo, linea, columna) {
+        var _this = this;
         var entorno = this;
         while (entorno != null) {
             if (!entorno.marcador) {
@@ -49,7 +50,16 @@ var Ambito = /** @class */ (function () {
                 entorno = null;
             }
         }
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"]);
+        var comprobar = true;
+        parser.TablaSimbolos.find(function (object) {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == _this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"]);
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 0));
     };
     Ambito.prototype.getVal = function (id) {
@@ -63,6 +73,7 @@ var Ambito = /** @class */ (function () {
         return null;
     };
     Ambito.prototype.setValM = function (id, valor, tipo, linea, columna) {
+        var _this = this;
         var entorno = this;
         while (entorno != null) {
             if (!entorno.marcador) {
@@ -78,7 +89,16 @@ var Ambito = /** @class */ (function () {
                 entorno = null;
             }
         }
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"]);
+        var comprobar = true;
+        parser.TablaSimbolos.find(function (object) {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == _this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"]);
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 2));
     };
     Ambito.prototype.modValM = function (id, valor, tipo) {
@@ -97,6 +117,7 @@ var Ambito = /** @class */ (function () {
         }
     };
     Ambito.prototype.setValV = function (id, valor, tipo, linea, columna) {
+        var _this = this;
         var entorno = this;
         while (entorno != null) {
             if (!entorno.marcador) {
@@ -112,7 +133,16 @@ var Ambito = /** @class */ (function () {
                 entorno = null;
             }
         }
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"]);
+        var comprobar = true;
+        parser.TablaSimbolos.find(function (object) {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == _this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"]);
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo_1.Simbolo(valor, id.toLocaleLowerCase(), tipo, 1));
     };
     Ambito.prototype.modValV = function (id, valor, tipo) {

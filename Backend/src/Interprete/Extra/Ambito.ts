@@ -52,8 +52,16 @@ export class Ambito {
                 entorno = null
             }
         }
-
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"])
+        let comprobar = true;
+        parser.TablaSimbolos.find(object => {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Primitiva"])
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 0))
     }
 
@@ -86,8 +94,16 @@ export class Ambito {
                 entorno = null
             }
         }
-
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"])
+        let comprobar = true;
+        parser.TablaSimbolos.find(object => {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Matriz"])
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 2))
     }
 
@@ -126,7 +142,16 @@ export class Ambito {
             }
         }
 
-        parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"])
+        let comprobar = true;
+        parser.TablaSimbolos.find(object => {
+            if (object[1] == id.toLocaleLowerCase() && object[0] == this.nombre) {
+                object[2] = valor;
+                comprobar = false;
+            }
+        });
+        if (comprobar) {
+            parser.TablaSimbolos.push([this.nombre, id.toLocaleLowerCase(), valor, tipo, "Vector"])
+        }
         this.variables.set(id.toLocaleLowerCase(), new Simbolo(valor, id.toLocaleLowerCase(), tipo, 1))
     }
 
@@ -147,7 +172,7 @@ export class Ambito {
         }
     }
 
-    public setFunc(nombre:string, valor:Funcion, linea:number, columna:number){
+    public setFunc(nombre: string, valor: Funcion, linea: number, columna: number) {
         let entorno: Ambito | null = this
         while (entorno != null) {
             if (entorno.funciones.has(nombre.toLocaleLowerCase())) {
