@@ -80,7 +80,17 @@ var LlamadoFuncion = /** @class */ (function (_super) {
                 for (var i in this.parametros) {
                     var param = this.parametros[i].ejecutar(ambito);
                     if (param.type == busqueda.parametros[i].tipo) {
-                        nuevo.setVal(busqueda.parametros[i].nombre, param.value, param.type, this.linea, this.columna);
+                        if (typeof (param.value) == 'object') {
+                            if (typeof (param.value[0]) == 'object') {
+                                nuevo.setValM(busqueda.parametros[i].nombre, param.value, param.type, this.linea, this.columna);
+                            }
+                            else {
+                                nuevo.setValV(busqueda.parametros[i].nombre, param.value, param.type, this.linea, this.columna);
+                            }
+                        }
+                        else {
+                            nuevo.setVal(busqueda.parametros[i].nombre, param.value, param.type, this.linea, this.columna);
+                        }
                     }
                     else {
                         throw new Error_1.ErrorE(this.linea, this.columna, "Semantico", "El valor: ".concat(param.value, " no es del tipo adecuado del parametro: ").concat(busqueda.parametros[i].nombre));
