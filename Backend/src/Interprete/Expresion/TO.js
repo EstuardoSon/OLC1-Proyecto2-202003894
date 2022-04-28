@@ -91,7 +91,7 @@ var Redondear = /** @class */ (function (_super) {
             throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: [' + value.value + '] no es un Int o Double');
         }
         if (value.type == 0 || value.type == 1) {
-            return { value: Math.round(value.value), type: 0 };
+            return { value: Math.round(value.value), type: value.type };
         }
         throw new Error_1.ErrorE(this.linea, this.columna, 'Semantico', 'No es posible ejecutar la funcion Round ya que: ' + value.value + ' no es un Int o Double');
     };
